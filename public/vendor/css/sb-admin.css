@@ -476,3 +476,18 @@ footer.sticky-footer {
     width: calc(100% - 55px);
   }
 }
+
+.router-link-active {
+  background-color: #9e9e9e; /*800*/
+  color: #fff !important;
+}
+
+.router-link-exact-active{
+    background-color: #9e9e9e; /*800*/
+    color: #fff !important;
+}
+
+/*#mainNav{*/
+  /*border-bottom:1px solid #ddd;*/
+    /*z-index: 1000;*/
+/*}*/

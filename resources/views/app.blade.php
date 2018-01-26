@@ -8,24 +8,20 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Sapia</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{asset("dist/main.css")}}">
-
-    <style>
-        .router-link-active {
-            /*background-color: #205b73 ; !*140*!*/
-            background-color: #9e9e9e; /*800*/
-            color: #fff !important;
-        }
-    </style>
+{{--        <link rel="stylesheet" href="{{ asset('node_modules/vue-multiselect/dist/vue-multiselect.min.css') }}">--}}
+        <link rel="stylesheet" href="{{asset("dist/main.css")}}">
 </head>
+{{--<body class="fixed-nav sticky-footer bg-dark sidenav-toggled" id="page-top">--}}
 <body class="fixed-nav sticky-footer bg-light" id="page-top">
 <div id="app">
     <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light" id="mainNav">
-        <a class="navbar-brand" href="index.html"><b>Sapia (Corporativo)</b></a>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" id="mainNav">
+        <a href="/home" class="navbar-brand">
+            <b>Sapia (Corporativo)</b>
+        </a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
                 data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -46,13 +42,19 @@
     <footer class="sticky-footer">
         <div class="container">
             <div class="text-center">
-                <small>Copyright © Your Website 2018</small>
+                <small>Copyright © Sapia Corporation {{date("Y")}}</small>
             </div>
         </div>
     </footer>
 
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top" @click="scrollUp()">
+        <i class="fa fa-angle-up"></i>
+    </a>
+
     <!-- Logout Modal-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -72,9 +74,9 @@
 
 </div>
 
-    <!-- Scripts -->
-    <script src="{{asset("dist/main.js")}}"></script>
-    <script src="{{ asset('dist/app.js') }}"></script>
+<!-- Scripts -->
+<script src="{{asset("dist/main.js")}}"></script>
+<script src="{{ asset('dist/app.js') }}"></script>
 
 </body>
 </html>

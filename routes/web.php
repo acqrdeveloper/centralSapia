@@ -14,8 +14,13 @@
 Route::get('/', "Controller@viewVue");
 
 Route::get("/report", "Controller@viewVue");
+Route::get("/user-profile", "Controller@viewVue");
 
 Route::get("/reportToJson", "ReportController@doReport");
 
 Route::get('/home', 'Controller@viewVue')->name('home');
 
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

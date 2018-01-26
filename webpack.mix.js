@@ -11,14 +11,18 @@ const {mix} = require('laravel-mix');
  */
 
 mix.js('resources/assets/js/app.js', 'public/dist');
-// mix.sass('resources/assets/sass/app.scss', 'public/sapia/css');
+mix.sass("public/vendor/scss/style.scss","public/build/css/style.css");
+// mix.sass('resources/assets/sass/app.scss', "public/build/css/app.css");
 
 mix.copyDirectory("node_modules/font-awesome/fonts","public/fonts");
+
 
 mix.styles([
     "node_modules/bootstrap/dist/css/bootstrap.css",
     "node_modules/font-awesome/css/font-awesome.css",
-    "public/vendor/css/sb-admin.css"
+    "node_modules/vue-multiselect/dist/vue-multiselect.min.css",
+    "public/vendor/css/sb-admin.css",
+    "public/build/css/style.css"
 ], "public/dist/main.css");
 
 mix.js([
@@ -27,3 +31,4 @@ mix.js([
     "node_modules/jquery.easing/jquery.easing.js",
     "public/vendor/js/sb-admin.js"
 ], "public/dist/main.js");
+

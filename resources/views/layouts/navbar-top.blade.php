@@ -1,10 +1,4 @@
-<ul class="navbar-nav sidenav-toggler">
-    <li class="nav-item">
-        <a class="nav-link text-center" id="sidenavToggler">
-            <i class="fa fa-fw fa-angle-left"></i>
-        </a>
-    </li>
-</ul>
+
 <ul class="navbar-nav ml-auto">
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle mr-lg-2" id="messagesDropdown" href="#" data-toggle="dropdown"
@@ -101,18 +95,20 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle mr-lg-2" id="" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-fw fa-user"></i>
-            <b>Alex Christian</b>
+            <b>Super Administrator</b>
         </a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
-            <h6 class="dropdown-header">Settings:</h6>
-            <div class="dropdown-divider"></div>
+            <router-link class="dropdown-item" :to="{name:'user-profile'}">
+                <i class="fa fa-fw fa-user-circle"></i>
+                <small>Profile</small>
+            </router-link>
             <a class="dropdown-item" href="#">
-              <i class="fa fa-cogs"></i>
-                <span>Profile</span>
+                <i class="fa fa-fw fa-tag"></i>
+                <small>Status</small>
             </a>
             <div class="dropdown-divider"></div>
-            <a href="" class="dropdown-item" data-toggle="modal" data-target="#exampleModal">
-                <i class="fa fa-fw fa-sign-out"></i>Logout
+            <a href="" class="dropdown-item text-danger" data-toggle="modal" data-target="#exampleModal">
+                <i class="fa fa-fw fa-sign-out"></i><b>Logout</b>
             </a>
         </div>
     </li>

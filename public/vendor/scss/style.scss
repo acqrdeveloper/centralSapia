@@ -1,0 +1,35 @@
+.mx-datepicker{
+  //margin: 10px 5px 10px 0;
+  .mx-input{
+    //padding:6px 30px 6px 10px;
+    height: calc(2.25rem + 2px);
+  }
+  //.mx-datepicker-popup{
+  //  top: 25px;
+  //}
+}
+
+.form-inline > input,
+.form-inline > select,
+.form-inline > span,
+.form-inline > label,
+.form-inline > div,
+.form-inline > a,
+.form-inline > button {
+  margin: 5px 5px 5px 0;
+}
+
+.card-header {
+  header {
+    font-size: x-large;
+  }
+}
+
+h1 > i,
+h2 > i,
+h3 > i,
+h4 > i,
+h5 > i,
+h6 > i {
+  margin-right: 8px;
+}

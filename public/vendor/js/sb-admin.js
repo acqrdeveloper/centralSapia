@@ -6,6 +6,7 @@
   })
   // Toggle the side navigation
   $("#sidenavToggler").click(function(e) {
+    console.log("class");
     e.preventDefault();
     $("body").toggleClass("sidenav-toggled");
     $(".navbar-sidenav .nav-link-collapse").addClass("collapsed");

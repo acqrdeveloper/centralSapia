@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 
 import Report from './components/Report.vue';
 import Example from './components/Example';
+import UserProfile from './components/UserProfile';
 
 Vue.use(VueRouter);
 
@@ -19,7 +20,12 @@ export const ROUTER = new VueRouter({
             path: '/home',
             component: Example,
             name: 'home'
-        }
+        },
+        {
+            path: '/user-profile',
+            component: UserProfile,
+            name: 'user-profile'
+        },
     ]
 });
 

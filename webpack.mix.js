@@ -1,4 +1,4 @@
-const { mix } = require('laravel-mix');
+const {mix} = require('laravel-mix');
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -10,5 +10,20 @@ const { mix } = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/app.js', 'public/sapia/js')
-   .sass('resources/assets/sass/app.scss', 'public/sapia/css');
+mix.js('resources/assets/js/app.js', 'public/dist');
+// mix.sass('resources/assets/sass/app.scss', 'public/sapia/css');
+
+mix.copyDirectory("node_modules/font-awesome/fonts","public/fonts");
+
+mix.styles([
+    "node_modules/bootstrap/dist/css/bootstrap.css",
+    "node_modules/font-awesome/css/font-awesome.css",
+    "public/vendor/css/sb-admin.css"
+], "public/dist/main.css");
+
+mix.js([
+    "node_modules/jquery/dist/jquery.js",
+    "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
+    "node_modules/jquery.easing/jquery.easing.js",
+    "public/vendor/js/sb-admin.js"
+], "public/dist/main.js");

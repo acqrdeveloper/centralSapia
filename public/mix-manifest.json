@@ -1,4 +1,5 @@
 {
-    "/sapia/js/app.js": "/sapia/js/app.js",
-    "/sapia/css/app.css": "/sapia/css/app.css"
+    "/dist/app.js": "/dist/app.js",
+    "/dist/main.js": "/dist/main.js",
+    "/dist/main.css": "/dist/main.css"
 }

@@ -11,13 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', "Controller@viewVue");
 
 Route::get("/report", "Controller@viewVue");
 
 Route::get("/reportToJson", "ReportController@doReport");
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'Controller@viewVue')->name('home');
 

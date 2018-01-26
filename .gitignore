@@ -13,5 +13,6 @@ yarn-error.log
 
 #Sapia Imports
 /public/sapia
-/public/fonts
 composer.lock
+public/dist
+public/fonts

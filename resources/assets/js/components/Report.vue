@@ -97,7 +97,7 @@
                     <td colspan="30">
                         <div>
                             <p></p>
-                            <center>LOADING TABLE...</center>
+                            <i class="fa fa-circle-o-notch fa-spin"></i>
                             <p></p>
                         </div>
                     </td>

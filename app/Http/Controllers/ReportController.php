@@ -2,629 +2,224 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use App\Http\Requests\ReportRequest;
+use App\Http\Services\ReportService;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use PHPExcel;
+use PHPExcel_IOFactory;
 
 class ReportController extends Controller
 {
-    function doReport()
+
+    function __construct(ReportService $service)
     {
-        $rpta = [];
-        if (request("puser_id") != 0) {
-            $data = $this->getReport1800();
-        } else {
-            $data = $this->byUserAll();
+        $this->service = $service;
+    }
+
+    function getUsers()
+    {
+        $data = [];
+        $dataUsers = DB::select("SELECT id,CONCAT(users.apellido_paterno,' ',users.apellido_materno,', ',users.primer_nombre) AS 'nameComplete',username FROM users;");
+        foreach ($dataUsers as $v) {
+            array_push($data, ["id" => $v->id, "value" => $v->nameComplete]);
         }
         $rpta["load"] = true;
         $rpta["data"] = $data;
         return response()->json($rpta);
     }
 
-    function byUserAll()
+    function selectReport(ReportRequest $request)
     {
-        $users = DB::select("select * from users");
-        $data = [];
-        foreach ($users as $key => $user) {
-            array_push($data, [$user->id => $this->getReport1800($user)]);
-        }
-        return $data;
-    }
-
-    function getReport1800($user = null)
-    {
-        $hours = [
-            "00:00:00",
-            "00:30:00",
-            "01:00:00",
-            "01:30:00",
-            "02:00:00",
-            "02:30:00",
-            "03:00:00",
-            "03:30:00",
-            "04:00:00",
-            "04:30:00",
-            "05:00:00",
-            "05:30:00",
-            "06:00:00",
-            "06:30:00",
-            "07:00:00",
-            "07:30:00",
-            "08:00:00",
-            "08:30:00",
-            "09:00:00",
-            "09:30:00",
-            "10:00:00",
-            "10:30:00",
-            "11:00:00",
-            "11:30:00",
-            "12:00:00",
-            "12:30:00",
-            "13:00:00",
-            "13:30:00",
-            "14:00:00",
-            "14:30:00",
-            "15:00:00",
-            "15:30:00",
-            "16:00:00",
-            "16:30:00",
-            "17:00:00",
-            "17:30:00",
-            "18:00:00",
-            "18:30:00",
-            "19:00:00",
-            "19:30:00",
-            "20:00:00",
-            "20:30:00",
-            "21:00:00",
-            "21:30:00",
-            "22:00:00",
-            "22:30:00",
-            "23:00:00",
-            "23:30:00"
-        ];
-        $data = [];
-        $login = 0;
-        $acd = 0;
-        $break = 0;
-        $sshh = 0;
-        $refrigerio = 0;
-        $feedback = 0;
-        $capacitacion = 0;
-        $backoffice = 0;
-        $inbound = 0;
-        $outbound = 0;
-        $ring_inbound = 0;
-        $ring_outbound = 0;
-        $hold_inbound = 0;
-        $hold_outbound = 0;
-        $ring_inbound_interno = 0;
-        $inbound_interno = 0;
-        $outbound_interno = 0;
-        $ring_outbound_interno = 0;
-        $hold_inbound_interno = 0;
-        $hold_outbound_interno = 0;
-        $ring_inbound_transfer = 0;
-        $ring_outbound_transfer = 0;
-        $inbound_transfer = 0;
-        $hold_inbound_transfer = 0;
-        $hold_outbound_transfer = 0;
-        $desconectado = 0;
-        $events = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
-        $current_range_hour = "";
-        $current_user_id = "";
-        //
-        //Recorrer array horas
-
-        foreach ($hours as $k => $v) {
-            //Variables
-            $i = $k;
-            $j = $k + 1;
-            $total = 0;
-            $temp_diff_ini = 0;
-            $temp_diff_fin = 0;
-            $set = false;
-            $last_data = null;
-            //Params procedure
-            $pfecha_ini = request("pfecha_ini");
-            $pfecha_fin = request("pfecha_fin");
-            $puser_id = $user != null ? $user->id : request("puser_id");
-            $prol = request("prol");
-            //Validar posicion para el rango de horario
-            if (isset($hours[$k + 1])) {
-                $query = DB::select("CALL SP_REPORT_30('" . $pfecha_ini . "','" . $pfecha_fin . "','" . $hours[$k] . "','" . $hours[$k + 1] . "','" . $puser_id . "','" . $prol . "'); ");
-            } else {
-                $query = DB::select("CALL SP_REPORT_30('" . $pfecha_ini . "','" . $pfecha_fin . "','" . $hours[$k] . "','" . $hours[0] . "','" . $puser_id . "','" . $prol . "'); ");
-            }
-            //Si hay registros
-            if (count($query)) {
-                if (isset($hours[$k + 1])) {
-                    $range_hour = $hours[$k] . " - " . $hours[$k + 1];
-                } else {
-                    $range_hour = $hours[$k] . " - " . $hours[0];
-                }
-                //Ultimo indice
-                $index_final = count($query) - 1;
-                //Recorrer registros
-                foreach ($query as $kk => $vv) {
-
-                    //Validar si estamos tratando el mismo usuario
-                    if ($user != null) {
-                        if ($vv->user_id != $current_user_id) {
-                            $data = [];
-                        }
-                        if ($vv->user_id == $user->id) {
-                            $current_user_id = $vv->user_id;
-                            $by_user = true;
-                        }
-                    }
-
-//##
-                    if (isset($query[$kk + 1])) {
-                        $diff_total = $this->getDiffDatetime($vv->date_event, $query[$kk + 1]->date_event, true);
-                    } else {
-                        $diff_total = $this->getDiffDatetime($vv->date_event, $query[0]->date_event, true);
-                    }
-                    //Primera regla
-                    //Si es el primer indice
-                    if ($kk == 0) {
-                        $h = (new \DateTime($query[$kk]->date_event))->format("H:i:s");
-                        if ($h != $hours[$i]) {
-                            $temp_diff_ini = $this->getDiffDatetime($query[$kk]->date_event, $hours[$i], true);
-                        }
-                    }
-                    //Segunda regla
-                    //Si es el ultimo indice
-                    if ($kk == $index_final) {
-                        $h = (new \DateTime($query[$index_final]->date_event))->format("H:i:s");
-                        if ($h != $hours[$j]) {
-                            $temp_diff_fin = $this->getDiffDatetime($query[$index_final]->date_event, $hours[$j], true);
-                        }
-                    }
-                    //Recorrer array rango por hora armado
-                    for ($g = 0; $g <= count($hours); $g++) {
-                        //Si es diferente al rango de hora
-                        if ($range_hour != $current_range_hour) {
-                            //Reinicializar estados
-                            $login = 0;
-                            $acd = 0;
-                            $break = 0;
-                            $sshh = 0;
-                            $refrigerio = 0;
-                            $feedback = 0;
-                            $capacitacion = 0;
-                            $backoffice = 0;
-                            $inbound = 0;
-                            $outbound = 0;
-                            $ring_inbound = 0;
-                            $ring_outbound = 0;
-                            $hold_inbound = 0;
-                            $hold_outbound = 0;
-                            $ring_inbound_interno = 0;
-                            $inbound_interno = 0;
-                            $outbound_interno = 0;
-                            $ring_outbound_interno = 0;
-                            $hold_inbound_interno = 0;
-                            $hold_outbound_interno = 0;
-                            $ring_inbound_transfer = 0;
-                            $ring_outbound_transfer = 0;
-                            $inbound_transfer = 0;
-                            $hold_inbound_transfer = 0;
-                            $hold_outbound_transfer = 0;
-                            $desconectado = 0;
-                            //Reinicializar total
-                            $total = 0;
-                        }
-                        //Validar si seguimos en el rango de hora
-                        if (isset($hours[$g + 1])) {
-                            if ($range_hour == $hours[$g] . " - " . $hours[$g + 1]) {
-                                //Set variable con rango de hora actual
-                                $current_range_hour = $range_hour;
-                            }
-                        }
-                    }
-                    //Validar evento existente
-                    $do = false;
-                    for ($x = 0; $x <= count($events); $x++) {
-                        if ($x == $vv->evento_id) {
-                            $do = true;
-                            break;
-                        } else {
-                            $do = false;
-                        }
-                    }
-                    //Set ultimo indice para recalcular
-                    if ($kk == $index_final) {
-                        $diff_total = 0;
-                        $set = true;
-                        $last_data = array_merge(["data" => $vv], ["range" => $hours[$i] . " - " . $hours[$j]]);
-                    } else {
-                        $set = false;
-                        $last_id = null;
-                    }
-                    //Validar y Cargar por evento
-                    if ($do) {
-                        switch ($vv->evento_id) {
-                            case 1:
-                                $acd += $diff_total;
-                                break;
-                            case 2:
-                                $break += $diff_total;
-                                break;
-                            case 3:
-                                $sshh += $diff_total;
-                                break;
-                            case 4:
-                                $refrigerio += $diff_total;
-                                break;
-                            case 5:
-                                $feedback += $diff_total;
-                                break;
-                            case 6:
-                                $capacitacion += $diff_total;
-                                break;
-                            case 7:
-                                $backoffice += $diff_total;
-                                break;
-                            case 8:
-                                $inbound += $diff_total;
-                                break;
-                            case 9:
-                                $outbound += $diff_total;
-                                break;
-                            case 11:
-                                $login += $diff_total;
-                                break;
-                            case 12:
-                                $ring_inbound += $diff_total;
-                                break;
-                            case 13:
-                                $ring_outbound += $diff_total;
-                                break;
-                            case 15:
-                                $desconectado += $diff_total;
-                                break;
-                            case 16:
-                                $hold_inbound += $diff_total;
-                                break;
-                            case 17:
-                                $hold_outbound += $diff_total;
-                                break;
-                            case 18:
-                                $ring_inbound_interno += $diff_total;
-                                break;
-                            case 19:
-                                $inbound_interno += $diff_total;
-                                break;
-                            case 20:
-                                $outbound_interno += $diff_total;
-                                break;
-                            case 21:
-                                $ring_outbound_interno += $diff_total;
-                                break;
-                            case 22:
-                                $hold_inbound_interno += $diff_total;
-                                break;
-                            case 23:
-                                $hold_outbound_interno += $diff_total;
-                                break;
-                            case 24:
-                                $ring_inbound_transfer += $diff_total;
-                                break;
-                            case 25:
-                                $inbound_transfer += $diff_total;
-                                break;
-                            case 26:
-                                $hold_inbound_transfer += $diff_total;
-                                break;
-                            case 27:
-                                $ring_outbound_transfer += $diff_total;
-                                break;
-                            case 28:
-                                $hold_outbound_transfer += $diff_total;
-                                break;
-                        }
-                    } else {
-                        switch ($vv->evento_id) {
-                            case 1:
-                                $acd = $diff_total;
-                                break;
-                            case 2:
-                                $break = $diff_total;
-                                break;
-                            case 3:
-                                $sshh = $diff_total;
-                                break;
-                            case 4:
-                                $refrigerio = $diff_total;
-                                break;
-                            case 5:
-                                $feedback = $diff_total;
-                                break;
-                            case 6:
-                                $capacitacion = $diff_total;
-                                break;
-                            case 7:
-                                $backoffice = $diff_total;
-                                break;
-                            case 8:
-                                $inbound = $diff_total;
-                                break;
-                            case 9:
-                                $outbound = $diff_total;
-                                break;
-                            case 11:
-                                $login = $diff_total;
-                                break;
-                            case 12:
-                                $ring_inbound = $diff_total;
-                                break;
-                            case 13:
-                                $ring_outbound = $diff_total;
-                                break;
-                            case 15:
-                                $desconectado = $diff_total;
-                                break;
-                            case 16:
-                                $hold_inbound = $diff_total;
-                                break;
-                            case 17:
-                                $hold_outbound = $diff_total;
-                                break;
-                            case 18:
-                                $ring_inbound_interno = $diff_total;
-                                break;
-                            case 19:
-                                $inbound_interno = $diff_total;
-                                break;
-                            case 20:
-                                $outbound_interno = $diff_total;
-                                break;
-                            case 21:
-                                $ring_outbound_interno = $diff_total;
-                                break;
-                            case 22:
-                                $hold_inbound_interno = $diff_total;
-                                break;
-                            case 23:
-                                $hold_outbound_interno = $diff_total;
-                                break;
-                            case 24:
-                                $ring_inbound_transfer = $diff_total;
-                                break;
-                            case 25:
-                                $inbound_transfer = $diff_total;
-                                break;
-                            case 26:
-                                $hold_inbound_transfer = $diff_total;
-                                break;
-                            case 27:
-                                $ring_outbound_transfer = $diff_total;
-                                break;
-                            case 28:
-                                $hold_outbound_transfer = $diff_total;
-                                break;
-                        }
-                    }
-                    //Calcular total, no sumar los ultimos registros para estabilizar los 30 min
-                    if ($kk != $index_final) {
-                        $total += $diff_total;
-                    }
-                    //##
-
-                }//Fin ciclo $query
-                //Calcular diferencias temporales
-                //Si tiene temporal inicial Ej: [00:00:00 - 00:30:00] -> 00:10:00 = 10 min
-                if ($temp_diff_ini > 0) {
-                    $total = $total + $temp_diff_ini;
-                }
-                //Si tiene temporal fin Ej: [00:00:00 - 00:30:00] -> 00:25:00 = 5 min
-                if ($temp_diff_fin > 0) {
-                    $total = $total + $temp_diff_fin;
-                }
-                //Acondicionar los resultados de diferencia por estado
-                if ($set) {
-                    if ($last_data != null) {
-                        if ($hours[$i] . " - " . $hours[$j] == $last_data["range"]) {
-                            switch ($last_data["data"]->evento_id) {
-                                case 1:
-                                    $acd += $temp_diff_fin;
-                                    break;
-                                case 2:
-                                    $break += $temp_diff_fin;
-                                    break;
-                                case 3:
-                                    $sshh += $temp_diff_fin;
-                                    break;
-                                case 4:
-                                    $refrigerio += $temp_diff_fin;
-                                    break;
-                                case 5:
-                                    $feedback += $temp_diff_fin;
-                                    break;
-                                case 6:
-                                    $capacitacion += $temp_diff_fin;
-                                    break;
-                                case 7:
-                                    $backoffice += $temp_diff_fin;
-                                    break;
-                                case 8:
-                                    $inbound += $temp_diff_fin;
-                                    break;
-                                case 9:
-                                    $outbound += $temp_diff_fin;
-                                    break;
-                                case 11:
-                                    $login += $temp_diff_fin;
-                                    break;
-                                case 12:
-                                    $ring_inbound += $temp_diff_fin;
-                                    break;
-                                case 13:
-                                    $ring_outbound += $temp_diff_fin;
-                                    break;
-                                case 15:
-                                    $desconectado += $temp_diff_fin;
-                                    break;
-                                case 16:
-                                    $hold_inbound += $temp_diff_fin;
-                                    break;
-                                case 17:
-                                    $hold_outbound += $temp_diff_fin;
-                                    break;
-                                case 18:
-                                    $ring_inbound_interno += $temp_diff_fin;
-                                    break;
-                                case 19:
-                                    $inbound_interno += $temp_diff_fin;
-                                    break;
-                                case 20:
-                                    $outbound_interno += $temp_diff_fin;
-                                    break;
-                                case 21:
-                                    $ring_outbound_interno += $temp_diff_fin;
-                                    break;
-                                case 22:
-                                    $hold_inbound_interno += $temp_diff_fin;
-                                    break;
-                                case 23:
-                                    $hold_outbound_interno += $temp_diff_fin;
-                                    break;
-                                case 24:
-                                    $ring_inbound_transfer += $temp_diff_fin;
-                                    break;
-                                case 25:
-                                    $inbound_transfer += $temp_diff_fin;
-                                    break;
-                                case 26:
-                                    $hold_inbound_transfer += $temp_diff_fin;
-                                    break;
-                                case 27:
-                                    $ring_outbound_transfer += $temp_diff_fin;
-                                    break;
-                                case 28:
-                                    $hold_outbound_transfer += $temp_diff_fin;
-                                    break;
-                            }
-                        }
-                    }
-                }
-            } else {
-                $login = 0;
-                $acd = 0;
-                $break = 0;
-                $sshh = 0;
-                $refrigerio = 0;
-                $feedback = 0;
-                $capacitacion = 0;
-                $backoffice = 0;
-                $inbound = 0;
-                $outbound = 0;
-                $ring_inbound = 0;
-                $ring_outbound = 0;
-                $hold_inbound = 0;
-                $hold_outbound = 0;
-                $ring_inbound_interno = 0;
-                $inbound_interno = 0;
-                $outbound_interno = 0;
-                $ring_outbound_interno = 0;
-                $hold_inbound_interno = 0;
-                $hold_outbound_interno = 0;
-                $ring_inbound_transfer = 0;
-                $ring_outbound_transfer = 0;
-                $inbound_transfer = 0;
-                $hold_inbound_transfer = 0;
-                $hold_outbound_transfer = 0;
-                $desconectado = 0;
-                $total = 0;
-                $temp_diff_ini = 0;
-                $temp_diff_fin = 0;
-            }
-            //Set por rango de hora y estado
-            if (isset($hours[$j])) {
-                $data[$hours[$i] . " - " . $hours[$j]]["acd"] = $acd;
-                $data[$hours[$i] . " - " . $hours[$j]]["break"] = $break;
-                $data[$hours[$i] . " - " . $hours[$j]]["sshh"] = $sshh;
-                $data[$hours[$i] . " - " . $hours[$j]]["refrigerio"] = $refrigerio;
-                $data[$hours[$i] . " - " . $hours[$j]]["feedback"] = $feedback;
-                $data[$hours[$i] . " - " . $hours[$j]]["capacitacion"] = $capacitacion;
-                $data[$hours[$i] . " - " . $hours[$j]]["backoffice"] = $backoffice;
-                $data[$hours[$i] . " - " . $hours[$j]]["inbound"] = $inbound;
-                $data[$hours[$i] . " - " . $hours[$j]]["outbound"] = $outbound;
-                $data[$hours[$i] . " - " . $hours[$j]]["login"] = $login;
-                $data[$hours[$i] . " - " . $hours[$j]]["ring_inbound"] = $ring_inbound;
-                $data[$hours[$i] . " - " . $hours[$j]]["ring_outbound"] = $ring_outbound;
-                $data[$hours[$i] . " - " . $hours[$j]]["hold_inbound"] = $hold_inbound;
-                $data[$hours[$i] . " - " . $hours[$j]]["hold_outbound"] = $hold_outbound;
-                $data[$hours[$i] . " - " . $hours[$j]]["ring_inbound_interno"] = $ring_inbound_interno;
-                $data[$hours[$i] . " - " . $hours[$j]]["inbound_interno"] = $inbound_interno;
-                $data[$hours[$i] . " - " . $hours[$j]]["outbound_interno"] = $outbound_interno;
-                $data[$hours[$i] . " - " . $hours[$j]]["ring_outbound_interno"] = $ring_outbound_interno;
-                $data[$hours[$i] . " - " . $hours[$j]]["hold_inbound_interno"] = $hold_inbound_interno;
-                $data[$hours[$i] . " - " . $hours[$j]]["hold_outbound_interno"] = $hold_outbound_interno;
-                $data[$hours[$i] . " - " . $hours[$j]]["ring_inbound_transfer"] = $ring_inbound_transfer;
-                $data[$hours[$i] . " - " . $hours[$j]]["inbound_transfer"] = $inbound_transfer;
-                $data[$hours[$i] . " - " . $hours[$j]]["hold_inbound_transfer"] = $hold_inbound_transfer;
-                $data[$hours[$i] . " - " . $hours[$j]]["ring_outbound_transfer"] = $ring_outbound_transfer;
-                $data[$hours[$i] . " - " . $hours[$j]]["hold_outbound_transfer"] = $hold_outbound_transfer;
-                $data[$hours[$i] . " - " . $hours[$j]]["desconectado"] = $desconectado;
-
-                $data[$hours[$i] . " - " . $hours[$j]]["total"] = $total;
-                $data[$hours[$i] . " - " . $hours[$j]]["diff_inicial"] = $temp_diff_ini;
-                $data[$hours[$i] . " - " . $hours[$j]]["diff_final"] = $temp_diff_fin;
-            } else {
-                $data[$hours[$i] . " - " . $hours[0]]["acd"] = $acd;
-                $data[$hours[$i] . " - " . $hours[0]]["break"] = $break;
-                $data[$hours[$i] . " - " . $hours[0]]["sshh"] = $sshh;
-                $data[$hours[$i] . " - " . $hours[0]]["refrigerio"] = $refrigerio;
-                $data[$hours[$i] . " - " . $hours[0]]["feedback"] = $feedback;
-                $data[$hours[$i] . " - " . $hours[0]]["capacitacion"] = $capacitacion;
-                $data[$hours[$i] . " - " . $hours[0]]["backoffice"] = $backoffice;
-                $data[$hours[$i] . " - " . $hours[0]]["inbound"] = $inbound;
-                $data[$hours[$i] . " - " . $hours[0]]["outbound"] = $outbound;
-                $data[$hours[$i] . " - " . $hours[0]]["login"] = $login;
-                $data[$hours[$i] . " - " . $hours[0]]["ring_inbound"] = $ring_inbound;
-                $data[$hours[$i] . " - " . $hours[0]]["ring_outbound"] = $ring_outbound;
-                $data[$hours[$i] . " - " . $hours[0]]["hold_inbound"] = $hold_inbound;
-                $data[$hours[$i] . " - " . $hours[0]]["hold_outbound"] = $hold_outbound;
-                $data[$hours[$i] . " - " . $hours[0]]["ring_inbound_interno"] = $ring_inbound_interno;
-                $data[$hours[$i] . " - " . $hours[0]]["inbound_interno"] = $inbound_interno;
-                $data[$hours[$i] . " - " . $hours[0]]["outbound_interno"] = $outbound_interno;
-                $data[$hours[$i] . " - " . $hours[0]]["ring_outbound_interno"] = $ring_outbound_interno;
-                $data[$hours[$i] . " - " . $hours[0]]["hold_inbound_interno"] = $hold_inbound_interno;
-                $data[$hours[$i] . " - " . $hours[0]]["hold_outbound_interno"] = $hold_outbound_interno;
-                $data[$hours[$i] . " - " . $hours[0]]["ring_inbound_transfer"] = $ring_inbound_transfer;
-                $data[$hours[$i] . " - " . $hours[0]]["inbound_transfer"] = $inbound_transfer;
-                $data[$hours[$i] . " - " . $hours[0]]["hold_inbound_transfer"] = $hold_inbound_transfer;
-                $data[$hours[$i] . " - " . $hours[0]]["ring_outbound_transfer"] = $ring_outbound_transfer;
-                $data[$hours[$i] . " - " . $hours[0]]["hold_outbound_transfer"] = $hold_outbound_transfer;
-                $data[$hours[$i] . " - " . $hours[0]]["desconectado"] = $desconectado;
-
-                $data[$hours[$i] . " - " . $hours[0]]["total"] = $total;
-                $data[$hours[$i] . " - " . $hours[0]]["diff_inicial"] = $temp_diff_ini;
-                $data[$hours[$i] . " - " . $hours[0]]["diff_final"] = $temp_diff_fin;
-            }
-        }
-
-        return $data;
-
-    }
-
-    function getReport3600()
-    {
-        return ["name" => "alex quispe reporte 1 hora"];
-    }
-
-    function getDiffDatetime($datetime_ini, $datetime_fin, $onlyTime = false)
-    {
-        if ($onlyTime) {
-            $first = Carbon::parse(Carbon::parse($datetime_ini)->format("H:i:s"));
-            $second = Carbon::parse(Carbon::parse($datetime_fin)->format("H:i:s"));
-            return $first->diffInSeconds($second);// 10 min
+        $rpta = null;
+        if ($request->puser_id > 0) {
+            $rpta = $this->byUser($request);
         } else {
-            $first = Carbon::parse($datetime_ini);
-            $second = Carbon::parse($datetime_ini);
-            return $first->diffInSeconds($second);// 10 min
+            $rpta = $this->byUserAll($request);
         }
+        return response()->json($rpta);
+    }
+
+    function byUser($request)
+    {
+        return $this->service->reportToJsonService($request);
+    }
+
+    function byUserAll($request)
+    {
+        ini_set('max_execution_time', 300);
+        $users = DB::select("select id,primer_nombre,segundo_nombre,apellido_paterno,apellido_materno from users");
+        $data = [];
+//        $rpta = ["load" => true];
+        foreach ($users as $key => $user) {
+            $newrpta = $this->service->reportToJsonService($request, ["user" => $user]);
+            array_push($data, [$user->primer_nombre.' '.$user->apellido_paterno.' '.$user->apellido_materno => $newrpta["data"]]);
+        }
+        $this->fnSuccess($data);
+//        $rpta["data"] = $data;
+        return $this->rpta;
+    }
+
+    public function export(ReportRequest $request)
+    {
+        //Ejemplos:
+        //Usando Maatwebsite Excel Laravel
+        $filename = "byAll";
+        $rpta = null;
+        if ($request->puser_id > 0) {
+            $filename = "byUser";
+            $rpta = $this->byUser($request);
+        } else {
+            $rpta = $this->byUserAll($request);
+        }
+//        dd($rpta);
+        /*
+                return Excel::create($filename, function ($writer) use ($filename,$rpta) {
+                    $writer->sheet($filename, function ($sheet)use($rpta) {
+                        $sheet->setOrientation('portrait');
+                        $headers = [
+                            "A1" => "ID USUARIO",
+                            "B1" => "NOMBRE COMPLETO",
+                            "C1" => "NICK",
+                        ];
+                        //Get query
+        //                $rpta=
+        //                $newdata = DB::table("users")->select(["id", DB::raw("CONCAT(users.apellido_paterno,' ',users.apellido_materno,', ',users.primer_nombre) AS 'nameComplete'"), "username"])->get();
+                        //Process query fomated
+                        $data = collect($rpta["data"])->map(function ($x) {
+                            return (array)$x;
+                        })->toArray();
+                        dd($data);
+                        //Generate rows
+                        $sheet->fromArray($rpta["data"]);
+                        //Generate columns
+                        foreach ($headers as $k => $v) {
+                            $sheet->cell($k, function ($cell) use ($v) {
+                                //Manipulate the cell
+                                $cell->setValue($v);
+                            });
+                        }
+                    });
+                })->export(request("ext"));
+        */
+
+        //Usando PHPExcel library
+
+        try {
+            $objPHPExcel = new PHPExcel();
+            $objPHPExcel->getActiveSheet(1)->setTitle($filename);
+
+            if ($request->puser_id > 0) {
+                $objPHPExcel->getActiveSheet(1)->getStyle('A1:AD1')->applyFromArray($this->colorFillNoneSolid);
+                $objPHPExcel->getActiveSheet(1)->getStyle('B1')->applyFromArray($this->colorFillYellowSolid);
+                $objPHPExcel->getActiveSheet(1)->getStyle('AD1')->applyFromArray($this->colorFillRedSolid);
+                $objPHPExcel->getActiveSheet(1)->getStyle('A1:AD1')->getAlignment()->setTextRotation(90);
+                $columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD"];
+                $headers = ["HORA", "DIFF_INICIAL", "ACD", "BREAK", "SSHH", "REFRIGERIO", "FEEDBACK", "CAPACITACION", "BACKOFFICE", "INBOUND", "OUTBOUND",
+                    "LOGIN", "RING_INBOUND", "RING_OUTBOUND", "HOLD_INBOUND", "HOLD_OUTBOUND", "RING_INBOUND_INTERNO", "INBOUND_INTERNO",
+                    "OUTBOUND_INTERNO", "RING_OUTBOUND_INTERNO", "HOLD_INBOUND_INTERNO", "HOLD_OUTBOUND_INTERNO", "RING_INBOUND_TRANSFER",
+                    "INBOUND_TRANSFER", "HOLD_INBOUND_TRANSFER", "RING_OUTBOUND_TRANSFER", "HOLD_OUTBOUND_TRANSFER", "DESCONECTADO", "TOTAL", "DIFF_FINAL"];
+            } else {
+                $objPHPExcel->getActiveSheet(1)->getStyle('A1:AE1')->applyFromArray($this->colorFillNoneSolid);
+                $objPHPExcel->getActiveSheet(1)->getStyle('C1')->applyFromArray($this->colorFillYellowSolid);
+                $objPHPExcel->getActiveSheet(1)->getStyle('AE1')->applyFromArray($this->colorFillRedSolid);
+                $objPHPExcel->getActiveSheet(1)->getStyle('C1:AE1')->getAlignment()->setTextRotation(90);
+                $columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE"];
+                $headers = ["USUARIO", "HORA", "DIFF_INICIAL", "ACD", "BREAK", "SSHH", "REFRIGERIO", "FEEDBACK", "CAPACITACION", "BACKOFFICE", "INBOUND", "OUTBOUND",
+                    "LOGIN", "RING_INBOUND", "RING_OUTBOUND", "HOLD_INBOUND", "HOLD_OUTBOUND", "RING_INBOUND_INTERNO", "INBOUND_INTERNO",
+                    "OUTBOUND_INTERNO", "RING_OUTBOUND_INTERNO", "HOLD_INBOUND_INTERNO", "HOLD_OUTBOUND_INTERNO", "RING_INBOUND_TRANSFER",
+                    "INBOUND_TRANSFER", "HOLD_INBOUND_TRANSFER", "RING_OUTBOUND_TRANSFER", "HOLD_OUTBOUND_TRANSFER", "DESCONECTADO", "TOTAL", "DIFF_FINAL"];
+            }
+
+            $worksheet = $this->fnCreateExcel($objPHPExcel, $headers, $columns);
+            $i = 2;
+
+            if ($request->puser_id > 0) {
+                //First
+                foreach ($rpta["data"] as $k => $v) {
+                    $v = (object)$v;
+                    $worksheet->setCellValue($columns[0] . $i, $k);
+                    $worksheet->setCellValue($columns[1] . $i, $v->diff_inicial);
+                    $worksheet->setCellValue($columns[2] . $i, $v->acd);
+                    $worksheet->setCellValue($columns[3] . $i, $v->break);
+                    $worksheet->setCellValue($columns[4] . $i, $v->sshh);
+                    $worksheet->setCellValue($columns[5] . $i, $v->refrigerio);
+                    $worksheet->setCellValue($columns[6] . $i, $v->feedback);
+                    $worksheet->setCellValue($columns[7] . $i, $v->capacitacion);
+                    $worksheet->setCellValue($columns[8] . $i, $v->backoffice);
+                    $worksheet->setCellValue($columns[9] . $i, $v->inbound);
+                    $worksheet->setCellValue($columns[10] . $i, $v->outbound);
+                    $worksheet->setCellValue($columns[11] . $i, $v->login);
+                    $worksheet->setCellValue($columns[12] . $i, $v->ring_inbound);
+                    $worksheet->setCellValue($columns[13] . $i, $v->ring_outbound);
+                    $worksheet->setCellValue($columns[14] . $i, $v->hold_inbound);
+                    $worksheet->setCellValue($columns[15] . $i, $v->hold_outbound);
+                    $worksheet->setCellValue($columns[16] . $i, $v->ring_inbound_interno);
+                    $worksheet->setCellValue($columns[17] . $i, $v->inbound_interno);
+                    $worksheet->setCellValue($columns[18] . $i, $v->outbound_interno);
+                    $worksheet->setCellValue($columns[19] . $i, $v->ring_outbound_interno);
+                    $worksheet->setCellValue($columns[20] . $i, $v->hold_inbound_interno);
+                    $worksheet->setCellValue($columns[21] . $i, $v->hold_outbound_interno);
+                    $worksheet->setCellValue($columns[22] . $i, $v->ring_inbound_transfer);
+                    $worksheet->setCellValue($columns[23] . $i, $v->inbound_transfer);
+                    $worksheet->setCellValue($columns[24] . $i, $v->hold_inbound_transfer);
+                    $worksheet->setCellValue($columns[25] . $i, $v->ring_outbound_transfer);
+                    $worksheet->setCellValue($columns[26] . $i, $v->hold_outbound_transfer);
+                    $worksheet->setCellValue($columns[27] . $i, $v->desconectado);
+                    $worksheet->setCellValue($columns[28] . $i, $v->total);
+                    $worksheet->setCellValue($columns[29] . $i, $v->diff_final);
+                    $i++;
+                }
+            } else {
+                //Second
+                foreach ($rpta["data"] as $k => $v) {
+//                    dd($k);
+                    foreach ($v as $kk => $vv) {
+                        foreach ($vv as $kkk => $vvv) {
+                            $vvv = (object)$vvv;
+                            $worksheet->setCellValue($columns[0] . $i, $kk);
+                            $worksheet->setCellValue($columns[1] . $i, $kkk);
+                            $worksheet->setCellValue($columns[2] . $i, $vvv->diff_inicial);
+                            $worksheet->setCellValue($columns[3] . $i, $vvv->acd);
+                            $worksheet->setCellValue($columns[4] . $i, $vvv->break);
+                            $worksheet->setCellValue($columns[5] . $i, $vvv->sshh);
+                            $worksheet->setCellValue($columns[6] . $i, $vvv->refrigerio);
+                            $worksheet->setCellValue($columns[7] . $i, $vvv->feedback);
+                            $worksheet->setCellValue($columns[8] . $i, $vvv->capacitacion);
+                            $worksheet->setCellValue($columns[9] . $i, $vvv->backoffice);
+                            $worksheet->setCellValue($columns[10] . $i, $vvv->inbound);
+                            $worksheet->setCellValue($columns[11] . $i, $vvv->outbound);
+                            $worksheet->setCellValue($columns[12] . $i, $vvv->login);
+                            $worksheet->setCellValue($columns[13] . $i, $vvv->ring_inbound);
+                            $worksheet->setCellValue($columns[14] . $i, $vvv->ring_outbound);
+                            $worksheet->setCellValue($columns[15] . $i, $vvv->hold_inbound);
+                            $worksheet->setCellValue($columns[16] . $i, $vvv->hold_outbound);
+                            $worksheet->setCellValue($columns[17] . $i, $vvv->ring_inbound_interno);
+                            $worksheet->setCellValue($columns[18] . $i, $vvv->inbound_interno);
+                            $worksheet->setCellValue($columns[19] . $i, $vvv->outbound_interno);
+                            $worksheet->setCellValue($columns[20] . $i, $vvv->ring_outbound_interno);
+                            $worksheet->setCellValue($columns[21] . $i, $vvv->hold_inbound_interno);
+                            $worksheet->setCellValue($columns[22] . $i, $vvv->hold_outbound_interno);
+                            $worksheet->setCellValue($columns[23] . $i, $vvv->ring_inbound_transfer);
+                            $worksheet->setCellValue($columns[24] . $i, $vvv->inbound_transfer);
+                            $worksheet->setCellValue($columns[25] . $i, $vvv->hold_inbound_transfer);
+                            $worksheet->setCellValue($columns[26] . $i, $vvv->ring_outbound_transfer);
+                            $worksheet->setCellValue($columns[27] . $i, $vvv->hold_outbound_transfer);
+                            $worksheet->setCellValue($columns[28] . $i, $vvv->desconectado);
+                            $worksheet->setCellValue($columns[29] . $i, $vvv->total);
+                            $worksheet->setCellValue($columns[30] . $i, $vvv->diff_final);
+                            $i++;
+                        }
+
+                    }
+
+                }
+            }
+
+            $this->downloadFileExport($objPHPExcel, $filename, $request->ext); // Por defecto es '.xlsx'
+        } catch (\PHPExcel_Exception $e) {
+            echo $e->getMessage();
+        }
+
     }
 }

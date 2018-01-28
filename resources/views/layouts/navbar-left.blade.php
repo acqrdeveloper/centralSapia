@@ -1,6 +1,6 @@
     <ul class="navbar-nav navbar-sidenav" id="exampleAccordion" style="overflow-y: auto;overflow-x: hidden">
     <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-        <router-link :to="{name:'home'}" class="nav-link" >
+        <router-link :to="{name:'home'}" class="nav-link">
             <i class="fa fa-fw fa-dashboard"></i>
             <span class="nav-link-text">Dashboard</span>
         </router-link>
@@ -9,17 +9,24 @@
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti"
            data-parent="#exampleAccordion">
             <i class="fa fa-fw fa-sitemap"></i>
-            <span class="nav-link-text">Menu Levels</span>
+            <span class="nav-link-text">Reports</span>
         </a>
         <ul class="sidenav-second-level collapse" id="collapseMulti">
             <li>
                 <router-link :to="{name:'report'}" class="nav-link">
                     <i class="fa fa-fw fa-area-chart"></i>
-                    <span class="nav-link-text">Report</span>
+                    <span class="nav-link-text">By Hours</span>
                 </router-link>
             </li>
             <li>
-                <a href="#">One Signal</a>
+                <a href="#">
+                    <i class="fa fa-fw fa-file-word-o"></i>
+                    <span>Statistic</span></a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fa fa-fw fa-users"></i>
+                    <span>Events Users</span></a>
             </li>
         </ul>
     </li>
@@ -57,10 +64,10 @@
         </ul>
     </li>
 </ul>
-    <ul class="navbar-nav sidenav-toggler">
-        <li class="nav-item">
-            <a class="nav-link text-center" @click="sideNavTooggle()">
-                <i class="fa fa-fw fa-bars"></i>
-            </a>
-        </li>
-    </ul>
+<ul class="navbar-nav sidenav-toggler">
+    <li class="nav-item">
+        <a class="nav-link text-center" id="sidenavToggler">
+            <i class="fa fa-fw fa-bars"></i>
+        </a>
+    </li>
+</ul>

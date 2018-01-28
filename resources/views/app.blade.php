@@ -15,7 +15,7 @@
         <link rel="stylesheet" href="{{asset("dist/main.css")}}">
 </head>
 {{--<body class="fixed-nav sticky-footer bg-dark sidenav-toggled" id="page-top">--}}
-<body class="fixed-nav sticky-footer bg-light" id="page-top">
+<body class="fixed-nav sticky-footer bg-light sidenav-toggled" id="page-top">
 <div id="app">
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" id="mainNav">

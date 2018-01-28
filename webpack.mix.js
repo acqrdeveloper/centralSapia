@@ -10,7 +10,7 @@ const {mix} = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/app.js', 'public/dist');
+mix.js(['resources/assets/js/app.js'], 'public/dist');
 mix.sass("public/vendor/scss/style.scss","public/build/css/style.css");
 // mix.sass('resources/assets/sass/app.scss', "public/build/css/app.css");
 
@@ -28,7 +28,6 @@ mix.styles([
 mix.js([
     "node_modules/jquery/dist/jquery.js",
     "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
-    "node_modules/jquery.easing/jquery.easing.js",
-    "public/vendor/js/sb-admin.js"
+    "node_modules/jquery.easing/jquery.easing.js"
 ], "public/dist/main.js");
 

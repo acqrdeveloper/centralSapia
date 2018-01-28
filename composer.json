@@ -6,15 +6,15 @@
     "type": "project",
     "require": {
         "php": ">=7.0.0",
-        "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
+        "fideloper/proxy": "~3.3",
         "dompdf/dompdf": "^0.8",
         "intervention/image": "^2.3",
         "laravel/socialite": "^3.0",
         "laravelcollective/html": "^5.4",
-        "nesbot/Carbon": "^1.22.1",
-        "phpoffice/phpexcel": "dev-master"
+        "maatwebsite/excel": "^2.1",
+        "nesbot/Carbon": "^1.22.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^2.3",
@@ -53,6 +53,10 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
+        ],
+        "refresh":[
+            "composer update",
+            "composer dump-autoload"
         ]
     },
     "config": {

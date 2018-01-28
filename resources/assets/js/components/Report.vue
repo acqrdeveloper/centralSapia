@@ -2,45 +2,101 @@
     <section>
         <div class="card">
             <div class="card-header">
-                <h3><i class="fa fa-file"></i>Report for 2/2 Hour</h3>
+                <h4><i class="fa fa-file"></i>Report of 1/2 Hour</h4>
                 <hr>
                 <div class="form-inline">
-                    <select v-model="selectedFilter" class="form-control">
-                        <option value="" selected disabled>Filter</option>
-                        <option value="0">Todos</option>
-                        <option value="1">Por Usuario</option>
-                    </select>
-                    <component v-if="selectedFilter == 0" :is="'vue-datepicker'" v-model="params.pfecha_fin" @change="change()" type="datetime" format="yyyy-MM-dd HH:mm:ss" lang="es" placeholder="Fecha Fin"/>
-
-                    <component v-else :is="'multiselect'" v-model="selectedUser" selectedLabel="Seleccionado"
-                               deselectLabel="Remover" selectLabel="Seleccionar"
-                               tag-placeholder="- seleccionar -" placeholder="- seleccionar -" label="value"
+                    <component :is="'vue-datepicker'"
+                               v-model="selectedFecha"
+                               type="date"
+                               format="YYYY-MM-DD"
+                               lang="es"
+                               placeholder="Fecha"
+                               @input="change()"/>
+                    <label hidden>
+                        <select v-model="selectedFilter" class="form-control" @change="change()">
+                            <option value="0" selected>Filtrar por Usuario</option>
+                            <option value="1" disabled>Filtrar Todos</option>
+                        </select>
+                    </label>
+                    <component v-if="selectedFilter == '0' "
+                               :is="'multiselect'"
+                               v-model="selectedUser"
+                               selectedLabel="Seleccionado"
+                               deselectLabel="Remover"
+                               selectLabel="Seleccionar"
+                               placeholder="Buscar"
+                               :options="dataUsers"
+                               label="value"
                                track-by="id"
-                               :options="[{id:1,value:'alex quispe'},{id:2,value:'deysi quispe'},{id:3,value:'diana quispe'}]" class="w-25" />
-
-                    <!--<v-select v-else v-model="selectedUser" :options="[{label:'alex',value:'Alex Quispe'}]" class="form-control"/>-->
-
-                    <!--<input v-else type="text" class="form-control w-25" placeholder="Buscar por nombre o apellido"/>-->
-                    <select class="form-control" v-model="params.puser_id" @change="change()">
-                        <option value="0">todos</option>
-                        <option value="48">48</option>
-                        <option value="33">33</option>
-                        <option value="35">35</option>
-                        <option value="37">37</option>
-                        <option value="40">40</option>
-                    </select>
-                    <select name="" id="" class="form-control"></select>
-                    <button class="btn btn-success"><i class="fa fa-fw fa-file-excel-o"></i> Excel</button>
-                    <button class="btn btn-success"><i class="fa fa-fw fa-file-excel-o"></i> Csv</button>
+                               class="w-50"
+                               @input="change()"/>
+                    <label>
+                        <select v-model="params.prol" class="form-control" @change="change()">
+                            <option value="user" selected>User</option>
+                            <option value="backoffice" selected>BackOffice</option>
+                        </select>
+                    </label>
+                    <div class="btn-group dropdown btn-group-xs" role="group" aria-label="Reserve Options">
+                        <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " type="button"
+                                class="btn btn-success" title="Exportar por defecto">
+                            <i class="fa fa-file-excel-o fa-fw"></i>
+                            <span>Excel</span>
+                        </button>
+                        <div class="btn-group open" role="group">
+                            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="true">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
+                                <li title="Exportar">
+                                    <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' "
+                                            class="dropdown-item text-success"><i class="fa fa-file-excel-o fa-fw"></i>
+                                        <small>Por Usuario</small>
+                                    </button>
+                                    <button @click="exportFile('xlsx',0)" class="dropdown-item text-success"><i
+                                            class="fa fa-file-excel-o fa-fw"></i>
+                                        <small>Todos</small>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="btn-group dropdown btn-group-xs" role="group">
+                        <button @click="exportFile('csv')" :disabled="params.puser_id == '' " type="button"
+                                class="btn btn-warning" title="Exportar por defecto">
+                            <i class="fa fa-file-excel-o fa-fw"></i>
+                            <span>Csv</span>
+                        </button>
+                        <div class="btn-group open" role="group">
+                            <button type="button" class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="true">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
+                                <li title="Exportar">
+                                    <button @click="exportFile('csv')" :disabled="params.puser_id == '' "
+                                            class="dropdown-item text-warning"><i class="fa fa-file-excel-o fa-fw"></i>
+                                        <small>Por Usuario</small>
+                                    </button>
+                                    <button @click="exportFile('csv',0)" class="dropdown-item text-warning"><i
+                                            class="fa fa-file-excel-o fa-fw"></i>
+                                        <small>Todos</small>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" title="consultar otra vez!" @click="refresh()"><i
+                            class="fa fa-fw fa-refresh"></i></button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 9px'>
-                        <tr v-if="params.puser_id != 0">
-                            <th>Tiempo Rango Hora</th>
-                            <th style='background-color: yellow'>Diff Inicial</th>
+                    <table class="table small table-condensed">
+                        <thead v-if="selectedFilter == 0 && !loading" class="">
+                        <tr>
+                            <th>Rango Hora</th>
+                            <th>Diff Inicial</th>
                             <th>Acd</th>
                             <th>Break</th>
                             <th>Sshh</th>
@@ -70,13 +126,15 @@
                             <th style='background-color: red'>Diff Final</th>
                             <th>Total</th>
                         </tr>
-                        <tr v-if="params.puser_id == 0">
+                        </thead>
+                        <thead v-else-if="selectedFilter == 1 && !loading">
+                        <tr>
                             <th colspan="29">Full Users</th>
                         </tr>
                         </thead>
-                        <tbody v-if="params.puser_id != 0">
-                        <tr v-if="!loading" v-for="(value,key) in dataReport">
-                            <td class="small">{{key}}</td>
+                        <tbody v-if="selectedFilter == 0 && !loading" class="">
+                        <tr v-for="(value,key) in dataReport">
+                            <td class="text-nowrap">{{key}}</td>
                             <td>{{value.diff_inicial}}</td>
                             <td>{{value.acd}}</td>
                             <td>{{value.break}}</td>
@@ -107,30 +165,17 @@
                             <td>{{value.diff_final}}</td>
                             <td>{{value.total}}</td>
                         </tr>
-                        <tr v-if="loading">
-                            <td colspan="30">
-                                <div>
-                                    <p></p>
-                                    <i class="fa fa-circle-o-notch fa-spin"></i>
-                                    <p></p>
-                                </div>
-                            </td>
-                        </tr>
                         </tbody>
-                        <tbody v-if="params.puser_id == 0">
-                        <tr v-if="!loading" v-for="(v,k) in dataReport">
+                        <tbody v-else-if="selectedFilter == 1 && !loading">
+                        <tr v-for="(v,k) in dataReport">
                             <td>
                                 <table border='1'
                                        style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
-                                    <tr v-if="!loading" v-for="(vv,kk) in v">
-                                        <!--<td>-->
-                                        <!--<table border='1' style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>-->
-                                        <!--<tr v-if="!loading" v-for="(vvv,kkk) in vv">-->
+                                    <tr v-for="(vv,kk) in v">
                                         <td>{{kk}}</td>
                                         <td>
-                                            <table border='1'
-                                                   style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
-                                                <tr v-if="!loading" v-for="(vvv,kkk) in vv">
+                                            <table border='1' style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
+                                                <tr v-for="(vvv,kkk) in vv">
                                                     <td>{{kkk}}</td>
                                                     <td>{{vvv.diff_inicial}}</td>
                                                     <td>{{vvv.acd}}</td>
@@ -164,19 +209,17 @@
                                                 </tr>
                                             </table>
                                         </td>
-                                        <!--</tr>-->
-                                        <!--</table>-->
-                                        <!--</td>-->
                                     </tr>
                                 </table>
                             </td>
                         </tr>
-                        <tr v-if="loading">
-                            <td colspan="30">
-                                <div>
-                                    <p></p>
-                                    <center>LOADING TABLE...</center>
-                                    <p></p>
+                        </tbody>
+                        <tbody v-else>
+                        <tr>
+                            <td colspan="auto" class="text-success text-center">
+                                <div style="padding: 2em 2em 0 2em">
+                                    <i class="fa fa-circle-o-notch fa-spin fa-2x"></i>
+                                    <p>Obteniendo Informacion!</p>
                                 </div>
                             </td>
                         </tr>
@@ -185,8 +228,6 @@
                 </div>
             </div>
         </div>
-
-
     </section>
 </template>
 
@@ -194,13 +235,10 @@
     import Vue from 'vue';
     import Service from '../services/ReportService';
     import DatePicker from 'vue2-datepicker';
-
-    import vSelect from 'vue-select';
-    Vue.component('v-select', vSelect);
-
     import Multiselect from 'vue-multiselect';
-    Vue.component('multiselect', Multiselect);
+    import moment from 'moment';
 
+    Vue.component('multiselect', Multiselect);
     Vue.component('vue-datepicker', DatePicker);
 
     export default {
@@ -208,34 +246,58 @@
             loading: false,
             params: {
                 tipo: 1800,
-                pfecha_ini: "",
-                pfecha_fin: "",
-                puser_id: "48",
+                pfecha: "",
+                puser_id: "",
                 prol: "user",
             },
             dataReport: [],
+            dataUsers: [],
             dataObj: {},
             model_date_1: "",
             model_date_2: "",
-            selectedFilter : "",
-            selectedUser : "",
-
+            selectedFilter: "0",
+            selectedUser: "",
+            selectedFecha: moment().add("days", 1).format("YYYY-MM-DD")
         }),
         beforeCreate() {
 
         },
         created() {
-            // this.list();
+            this.usersToJson();
         },
         methods: {
+            usersToJson() {
+                Service.dispatch("usersToJson", {self: this});
+            },
             list() {
-                Service.dispatch("list", {self: this});
+                Service.dispatch("reportJson", {self: this});
+            },
+            refresh() {
+                this.change();
             },
             change() {
-                this.loading = true;
-                if (this.params.pfecha_ini != "" && this.params.pfecha_fin != "") {
-                    this.list();
+                if (this.selectedFilter == '0') {
+                    if (this.selectedFecha != "" && this.selectedUser != "" && this.params.prol != "") {
+                        this.params.puser_id = this.selectedUser.id;
+                        this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
+                        this.loading = true;
+                        this.list();
+                    }
+                } else {
+                    if (this.selectedFecha != "") {
+                        this.params.puser_id = 0;
+                        this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
+                        this.loading = true;
+                        this.list();
+                    }
                 }
+            },
+            exportFile(ext, puser_id) {
+                if (puser_id != undefined) {
+                    this.params.puser_id = puser_id;
+                }
+                this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
+                return window.open("/export?ext=" + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + this.params.puser_id);
             }
         }
     }

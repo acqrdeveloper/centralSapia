@@ -95,7 +95,7 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle mr-lg-2" id="" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-fw fa-user"></i>
-            <b>Super Administrator</b>
+            <b>{{auth()->user()->name}}</b>
         </a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
             <router-link class="dropdown-item" :to="{name:'user-profile'}">

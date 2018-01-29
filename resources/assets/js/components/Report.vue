@@ -93,7 +93,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table small table-condensed">
-                        <thead v-if="selectedFilter == 0 && !loading" class="">
+                        <thead v-if="selectedFilter == 0 && !loading">
                         <tr>
                             <th>Rango Hora</th>
                             <th>Diff Inicial</th>
@@ -125,6 +125,8 @@
                             <th>Desconectado</th>
                             <th style='background-color: red'>Diff Final</th>
                             <th>Total</th>
+                            <th>Nivel Ocupacion</th>
+                            <th>Nivel Ocupacion Backoffice</th>
                         </tr>
                         </thead>
                         <thead v-else-if="selectedFilter == 1 && !loading">
@@ -132,7 +134,7 @@
                             <th colspan="29">Full Users</th>
                         </tr>
                         </thead>
-                        <tbody v-if="selectedFilter == 0 && !loading" class="">
+                        <tbody v-if="selectedFilter == 0 && !loading">
                         <tr v-for="(value,key) in dataReport">
                             <td class="text-nowrap">{{key}}</td>
                             <td>{{value.diff_inicial}}</td>
@@ -164,6 +166,8 @@
                             <td>{{value.desconectado}}</td>
                             <td>{{value.diff_final}}</td>
                             <td>{{value.total}}</td>
+                            <td><b>{{value.nivel_ocupacion}}%</b></td>
+                            <td><b>{{value.nivel_ocupacion_backoffice}}%</b></td>
                         </tr>
                         </tbody>
                         <tbody v-else-if="selectedFilter == 1 && !loading">
@@ -174,8 +178,7 @@
                                     <tr v-for="(vv,kk) in v">
                                         <td>{{kk}}</td>
                                         <td>
-                                            <table border='1'
-                                                   style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
+                                            <table border='1' style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
                                                 <tr v-for="(vvv,kkk) in vv">
                                                     <td>{{kkk}}</td>
                                                     <td>{{vvv.diff_inicial}}</td>
@@ -294,11 +297,12 @@
                 }
             },
             exportFile(ext, puser_id) {
-                if (puser_id != undefined) {
-                    this.params.puser_id = puser_id;
-                }
                 this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
-                return window.open("/export?ext=" + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + this.params.puser_id);
+                if (puser_id != undefined) {
+                    return window.open("/export?ext=" + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' +puser_id+'&prol='+this.params.prol);
+                }else{
+                    return window.open("/export?ext=" + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + this.params.puser_id+'&prol='+this.params.prol);
+                }
             }
         }
     }

@@ -50,85 +50,82 @@ class ReportController extends Controller
         ini_set('max_execution_time', 300);
         $users = DB::select("select id,primer_nombre,segundo_nombre,apellido_paterno,apellido_materno from users");
         $data = [];
-//        $rpta = ["load" => true];
         foreach ($users as $key => $user) {
             $newrpta = $this->service->reportToJsonService($request, ["user" => $user]);
-            array_push($data, [$user->primer_nombre.' '.$user->apellido_paterno.' '.$user->apellido_materno => $newrpta["data"]]);
+            array_push($data, [$user->primer_nombre . ' ' . $user->apellido_paterno . ' ' . $user->apellido_materno => $newrpta["data"]]);
         }
         $this->fnSuccess($data);
-//        $rpta["data"] = $data;
         return $this->rpta;
     }
 
     public function export(ReportRequest $request)
     {
-        //Ejemplos:
-        //Usando Maatwebsite Excel Laravel
-        $filename = "byAll";
-        $rpta = null;
-        if ($request->puser_id > 0) {
-            $filename = "byUser";
-            $rpta = $this->byUser($request);
-        } else {
-            $rpta = $this->byUserAll($request);
-        }
-//        dd($rpta);
-        /*
-                return Excel::create($filename, function ($writer) use ($filename,$rpta) {
-                    $writer->sheet($filename, function ($sheet)use($rpta) {
-                        $sheet->setOrientation('portrait');
-                        $headers = [
-                            "A1" => "ID USUARIO",
-                            "B1" => "NOMBRE COMPLETO",
-                            "C1" => "NICK",
-                        ];
-                        //Get query
-        //                $rpta=
-        //                $newdata = DB::table("users")->select(["id", DB::raw("CONCAT(users.apellido_paterno,' ',users.apellido_materno,', ',users.primer_nombre) AS 'nameComplete'"), "username"])->get();
-                        //Process query fomated
-                        $data = collect($rpta["data"])->map(function ($x) {
-                            return (array)$x;
-                        })->toArray();
-                        dd($data);
-                        //Generate rows
-                        $sheet->fromArray($rpta["data"]);
-                        //Generate columns
-                        foreach ($headers as $k => $v) {
-                            $sheet->cell($k, function ($cell) use ($v) {
-                                //Manipulate the cell
-                                $cell->setValue($v);
-                            });
-                        }
-                    });
-                })->export(request("ext"));
-        */
-
-        //Usando PHPExcel library
-
         try {
+            //Ejemplos:
+            //Usando Maatwebsite Excel Laravel
+            $filename = "byAll";
+            if ($request->puser_id > 0) {
+                $filename = "byUser";
+                $rpta = $this->byUser($request);
+            } else {
+                $rpta = $this->byUserAll($request);
+            }
+            /*
+                    return Excel::create($filename, function ($writer) use ($filename,$rpta) {
+                        $writer->sheet($filename, function ($sheet)use($rpta) {
+                            $sheet->setOrientation('portrait');
+                            $headers = [
+                                "A1" => "ID USUARIO",
+                                "B1" => "NOMBRE COMPLETO",
+                                "C1" => "NICK",
+                            ];
+                            //Get query
+            //                $rpta=
+            //                $newdata = DB::table("users")->select(["id", DB::raw("CONCAT(users.apellido_paterno,' ',users.apellido_materno,', ',users.primer_nombre) AS 'nameComplete'"), "username"])->get();
+                            //Process query fomated
+                            $data = collect($rpta["data"])->map(function ($x) {
+                                return (array)$x;
+                            })->toArray();
+                            dd($data);
+                            //Generate rows
+                            $sheet->fromArray($rpta["data"]);
+                            //Generate columns
+                            foreach ($headers as $k => $v) {
+                                $sheet->cell($k, function ($cell) use ($v) {
+                                    //Manipulate the cell
+                                    $cell->setValue($v);
+                                });
+                            }
+                        });
+                    })->export(request("ext"));
+            */
+
+            //Usando PHPExcel library
+
+
             $objPHPExcel = new PHPExcel();
             $objPHPExcel->getActiveSheet(1)->setTitle($filename);
 
             if ($request->puser_id > 0) {
                 $objPHPExcel->getActiveSheet(1)->getStyle('A1:AD1')->applyFromArray($this->colorFillNoneSolid);
                 $objPHPExcel->getActiveSheet(1)->getStyle('B1')->applyFromArray($this->colorFillYellowSolid);
-                $objPHPExcel->getActiveSheet(1)->getStyle('AD1')->applyFromArray($this->colorFillRedSolid);
+                $objPHPExcel->getActiveSheet(1)->getStyle('AC1')->applyFromArray($this->colorFillRedSolid);
                 $objPHPExcel->getActiveSheet(1)->getStyle('A1:AD1')->getAlignment()->setTextRotation(90);
                 $columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD"];
-                $headers = ["HORA", "DIFF_INICIAL", "ACD", "BREAK", "SSHH", "REFRIGERIO", "FEEDBACK", "CAPACITACION", "BACKOFFICE", "INBOUND", "OUTBOUND",
+                $headers = ["HORA", "DIFERENCIA_INICIAL", "ACD", "BREAK", "SSHH", "REFRIGERIO", "FEEDBACK", "CAPACITACION", "BACKOFFICE", "INBOUND", "OUTBOUND",
                     "LOGIN", "RING_INBOUND", "RING_OUTBOUND", "HOLD_INBOUND", "HOLD_OUTBOUND", "RING_INBOUND_INTERNO", "INBOUND_INTERNO",
                     "OUTBOUND_INTERNO", "RING_OUTBOUND_INTERNO", "HOLD_INBOUND_INTERNO", "HOLD_OUTBOUND_INTERNO", "RING_INBOUND_TRANSFER",
-                    "INBOUND_TRANSFER", "HOLD_INBOUND_TRANSFER", "RING_OUTBOUND_TRANSFER", "HOLD_OUTBOUND_TRANSFER", "DESCONECTADO", "TOTAL", "DIFF_FINAL"];
+                    "INBOUND_TRANSFER", "HOLD_INBOUND_TRANSFER", "RING_OUTBOUND_TRANSFER", "HOLD_OUTBOUND_TRANSFER", "DESCONECTADO", "DIFERENCIA_FINAL", "TOTAL"];
             } else {
                 $objPHPExcel->getActiveSheet(1)->getStyle('A1:AE1')->applyFromArray($this->colorFillNoneSolid);
                 $objPHPExcel->getActiveSheet(1)->getStyle('C1')->applyFromArray($this->colorFillYellowSolid);
-                $objPHPExcel->getActiveSheet(1)->getStyle('AE1')->applyFromArray($this->colorFillRedSolid);
+                $objPHPExcel->getActiveSheet(1)->getStyle('AD1')->applyFromArray($this->colorFillRedSolid);
                 $objPHPExcel->getActiveSheet(1)->getStyle('C1:AE1')->getAlignment()->setTextRotation(90);
                 $columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE"];
-                $headers = ["USUARIO", "HORA", "DIFF_INICIAL", "ACD", "BREAK", "SSHH", "REFRIGERIO", "FEEDBACK", "CAPACITACION", "BACKOFFICE", "INBOUND", "OUTBOUND",
+                $headers = ["USUARIO", "HORA", "DIFERENCIA_INICIAL", "ACD", "BREAK", "SSHH", "REFRIGERIO", "FEEDBACK", "CAPACITACION", "BACKOFFICE", "INBOUND", "OUTBOUND",
                     "LOGIN", "RING_INBOUND", "RING_OUTBOUND", "HOLD_INBOUND", "HOLD_OUTBOUND", "RING_INBOUND_INTERNO", "INBOUND_INTERNO",
                     "OUTBOUND_INTERNO", "RING_OUTBOUND_INTERNO", "HOLD_INBOUND_INTERNO", "HOLD_OUTBOUND_INTERNO", "RING_INBOUND_TRANSFER",
-                    "INBOUND_TRANSFER", "HOLD_INBOUND_TRANSFER", "RING_OUTBOUND_TRANSFER", "HOLD_OUTBOUND_TRANSFER", "DESCONECTADO", "TOTAL", "DIFF_FINAL"];
+                    "INBOUND_TRANSFER", "HOLD_INBOUND_TRANSFER", "RING_OUTBOUND_TRANSFER", "HOLD_OUTBOUND_TRANSFER", "DESCONECTADO", "DIFERENCIA_FINAL", "TOTAL"];
             }
 
             $worksheet = $this->fnCreateExcel($objPHPExcel, $headers, $columns);
@@ -166,14 +163,13 @@ class ReportController extends Controller
                     $worksheet->setCellValue($columns[25] . $i, $v->ring_outbound_transfer);
                     $worksheet->setCellValue($columns[26] . $i, $v->hold_outbound_transfer);
                     $worksheet->setCellValue($columns[27] . $i, $v->desconectado);
-                    $worksheet->setCellValue($columns[28] . $i, $v->total);
-                    $worksheet->setCellValue($columns[29] . $i, $v->diff_final);
+                    $worksheet->setCellValue($columns[28] . $i, $v->diff_final);
+                    $worksheet->setCellValue($columns[29] . $i, $v->total);
                     $i++;
                 }
             } else {
                 //Second
                 foreach ($rpta["data"] as $k => $v) {
-//                    dd($k);
                     foreach ($v as $kk => $vv) {
                         foreach ($vv as $kkk => $vvv) {
                             $vvv = (object)$vvv;
@@ -206,13 +202,11 @@ class ReportController extends Controller
                             $worksheet->setCellValue($columns[26] . $i, $vvv->ring_outbound_transfer);
                             $worksheet->setCellValue($columns[27] . $i, $vvv->hold_outbound_transfer);
                             $worksheet->setCellValue($columns[28] . $i, $vvv->desconectado);
-                            $worksheet->setCellValue($columns[29] . $i, $vvv->total);
-                            $worksheet->setCellValue($columns[30] . $i, $vvv->diff_final);
+                            $worksheet->setCellValue($columns[29] . $i, $vvv->diff_final);
+                            $worksheet->setCellValue($columns[30] . $i, $vvv->total);
                             $i++;
                         }
-
                     }
-
                 }
             }
 

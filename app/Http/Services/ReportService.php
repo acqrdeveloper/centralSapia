@@ -19,10 +19,9 @@ class ReportService
 {
     use Utility;
 
-    function reportToJsonService($request=null,$option=null)
+    function reportToJsonService($request = null, $option = null)
     {
         try {
-
             $hours = [
                 "00:00:00",
                 "00:30:00",
@@ -99,6 +98,7 @@ class ReportService
             $inbound_transfer = 0;
             $hold_inbound_transfer = 0;
             $hold_outbound_transfer = 0;
+            $outbound_transfer = 0;
             $desconectado = 0;
             $events = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
             $current_range_hour = "";
@@ -110,6 +110,8 @@ class ReportService
                 $i = $k;
                 $j = $k + 1;
                 $total = 0;
+                $total_ocupacion = 0;
+                $total_ocupacion_backoffice = 0;
                 $temp_diff_ini = 0;
                 $temp_diff_fin = 0;
                 $set = false;
@@ -119,12 +121,11 @@ class ReportService
                 $puser_id = $option["user"] != null ? $option["user"]->id : $request->puser_id;
                 $prol = $request->prol;
                 //Validar posicion para el rango de horario
+
                 if (isset($hours[$k + 1])) {
-//                $query = DB::select("CALL SP_REPORT_30('" . $pfecha_ini . "','" . $pfecha_fin . "','" . $hours[$k] . "','" . $hours[$k + 1] . "','" . $puser_id . "','" . $prol . "'); ");
-                    $query = DB::select("CALL SP_REPORT_1800('" . $pfecha . "','" . $hours[$k] . "','" . $hours[$k + 1] . "','" . $puser_id . "','" . $prol . "'); ");
+                    $query = DB::select("call SP_REPORT_1800(?,?,?,?,?) ", [$pfecha, $hours[$k], $hours[$k + 1], $puser_id, $prol]);
                 } else {
-//                $query = DB::select("CALL SP_REPORT_30('" . $pfecha_ini . "','" . $pfecha_fin . "','" . $hours[$k] . "','" . $hours[0] . "','" . $puser_id . "','" . $prol . "'); ");
-                    $query = DB::select("CALL SP_REPORT_1800('" . $pfecha . "','" . $hours[$k] . "','" . $hours[0] . "','" . $puser_id . "','" . $prol . "'); ");
+                    $query = DB::select("call SP_REPORT_1800(?,?,?,?,?) ", [$pfecha, $hours[$k], $hours[0], $puser_id, $prol]);
                 }
                 //Si hay registros
                 if (count($query)) {
@@ -148,7 +149,6 @@ class ReportService
                                 $by_user = true;
                             }
                         }
-
 //##
                         if (isset($query[$kk + 1])) {
                             $diff_total = $this->getDiffDatetime($vv->date_event, $query[$kk + 1]->date_event, true);
@@ -201,6 +201,7 @@ class ReportService
                                 $inbound_transfer = 0;
                                 $hold_inbound_transfer = 0;
                                 $hold_outbound_transfer = 0;
+                                $outbound_transfer = 0;
                                 $desconectado = 0;
                                 //Reinicializar total
                                 $total = 0;
@@ -313,6 +314,9 @@ class ReportService
                                 case 28:
                                     $hold_outbound_transfer += $diff_total;
                                     break;
+                                    case 29:
+                                        $outbound_transfer  += $diff_total;
+                                    break;
                             }
                         } else {
                             switch ($vv->evento_id) {
@@ -393,6 +397,9 @@ class ReportService
                                     break;
                                 case 28:
                                     $hold_outbound_transfer = $diff_total;
+                                    break;
+                                case 29:
+                                    $outbound_transfer  = $diff_total;
                                     break;
                             }
                         }
@@ -495,6 +502,9 @@ class ReportService
                                     case 28:
                                         $hold_outbound_transfer += $temp_diff_fin;
                                         break;
+                                        case 29:
+                                        $outbound_transfer += $temp_diff_fin;
+                                        break;
                                 }
                             }
                         }
@@ -526,10 +536,46 @@ class ReportService
                     $hold_inbound_transfer = 0;
                     $hold_outbound_transfer = 0;
                     $desconectado = 0;
-                    $total = 0;
                     $temp_diff_ini = 0;
                     $temp_diff_fin = 0;
+                    $total = 0;
+                    $total_ocupacion = 0;
+                    $total_ocupacion_backoffice = 0;
                 }
+
+                //Calcular Porcentajes
+                $totalACD = $inbound + $hold_inbound;
+                $totalOutbound = $outbound + $ring_outbound + $hold_outbound;
+                $totalBackoffice = $backoffice +
+                    $inbound_interno +
+                    $ring_inbound_interno +
+                    $hold_inbound_interno +
+                    $outbound_interno +
+                    $ring_outbound_interno +
+                    $hold_outbound_interno;
+                $totalAuxiliares = $break + $sshh + $refrigerio + $feedback + $capacitacion;
+                $totalAuxiliaresBack = $totalAuxiliares + $totalBackoffice;
+                $totalSuma = $acd + $break + $sshh + $refrigerio+ $feedback + $capacitacion + $backoffice + $inbound + $outbound +
+                    $ring_inbound + $ring_outbound +$hold_inbound+ $hold_outbound + $ring_inbound_interno + $inbound_interno+
+                    $outbound_interno+ $ring_outbound_interno +$hold_inbound_interno+ $hold_outbound_interno +$ring_inbound_transfer + $inbound_transfer +
+                    $hold_inbound_transfer + $ring_outbound_transfer + $hold_outbound_transfer + $outbound_transfer + $desconectado;
+                $tiempoLogeo = $totalSuma - $desconectado;
+                $n1 = ($totalACD + $totalOutbound);
+                $n2 = ($tiempoLogeo - $totalAuxiliaresBack);
+
+                if ($n1 > 0 && $n2 > 0) {
+                    $total_ocupacion = (float)(($totalACD + $totalOutbound) / ($tiempoLogeo - $totalAuxiliaresBack));
+                } else {
+                    $total_ocupacion = 0;
+                }
+                $n3 = ($totalACD + $totalOutbound + $totalBackoffice);
+                $n4 = ($tiempoLogeo - $totalAuxiliares);
+                if ($n3 > 0 && $n4 > 0) {
+                    $total_ocupacion_backoffice = (float)(($totalACD + $totalOutbound + $totalBackoffice) / ($tiempoLogeo - $totalAuxiliares));
+                } else {
+                    $total_ocupacion_backoffice = 0;
+                }
+
                 //Set por rango de hora y estado
                 if (isset($hours[$j])) {
                     $data[$hours[$i] . " - " . $hours[$j]]["acd"] = $acd;
@@ -559,9 +605,11 @@ class ReportService
                     $data[$hours[$i] . " - " . $hours[$j]]["hold_outbound_transfer"] = $hold_outbound_transfer;
                     $data[$hours[$i] . " - " . $hours[$j]]["desconectado"] = $desconectado;
 
-                    $data[$hours[$i] . " - " . $hours[$j]]["total"] = $total;
                     $data[$hours[$i] . " - " . $hours[$j]]["diff_inicial"] = $temp_diff_ini;
                     $data[$hours[$i] . " - " . $hours[$j]]["diff_final"] = $temp_diff_fin;
+                    $data[$hours[$i] . " - " . $hours[$j]]["total"] = $total;
+                    $data[$hours[$i] . " - " . $hours[$j]]["nivel_ocupacion"] =round($total_ocupacion,2);;
+                    $data[$hours[$i] . " - " . $hours[$j]]["nivel_ocupacion_backoffice"] = round($total_ocupacion_backoffice,2);
                 } else {
                     $data[$hours[$i] . " - " . $hours[0]]["acd"] = $acd;
                     $data[$hours[$i] . " - " . $hours[0]]["break"] = $break;
@@ -590,9 +638,11 @@ class ReportService
                     $data[$hours[$i] . " - " . $hours[0]]["hold_outbound_transfer"] = $hold_outbound_transfer;
                     $data[$hours[$i] . " - " . $hours[0]]["desconectado"] = $desconectado;
 
-                    $data[$hours[$i] . " - " . $hours[0]]["total"] = $total;
                     $data[$hours[$i] . " - " . $hours[0]]["diff_inicial"] = $temp_diff_ini;
                     $data[$hours[$i] . " - " . $hours[0]]["diff_final"] = $temp_diff_fin;
+                    $data[$hours[$i] . " - " . $hours[0]]["total"] = $total;
+                    $data[$hours[$i] . " - " . $hours[0]]["nivel_ocupacion"] = round($total_ocupacion,2);
+                    $data[$hours[$i] . " - " . $hours[0]]["nivel_ocupacion_backoffice"] = round($total_ocupacion_backoffice,2);
                 }
             }
             $this->fnSuccess($data);

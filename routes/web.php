@@ -11,17 +11,34 @@
 |
 */
 
-Route::get('/', "Controller@viewVue");
-Route::get("/reportToJson", "ReportController@doReport");
-Route::get("/usersToJson", "ReportController@getUsers");
+Route::group(['middleware' => ['guest']], function () {
+    // Auth
+//    Route::get('login', 'Auth\LoginController@showLoginForm');
+    Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+    Route::post('login', 'Auth\LoginController@fnDoLogin');
+//    Route::post('login', 'Auth\LoginController@login');
+// Registration Routes...
+    Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+    Route::post('register', 'Auth\RegisterController@register');
+// Password Reset Routes...
+    Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+    Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+    Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+    Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+});
 
+Route::group(['middleware' => ['auth', 'web']], function () {
+    Route::get('/', "Controller@viewVue");
+    Route::get("/reportToJson", "ReportController@doReport");
+    Route::get("/usersToJson", "ReportController@getUsers");
 //Views
-Route::get("/report", "Controller@viewVue");
-Route::get('/home', 'Controller@viewVue')->name('home');
-Route::get("/user-profile", "Controller@viewVue");
+    Route::get("/report", "Controller@viewVue");
+    Route::get('/home', 'Controller@viewVue')->name('home');
+    Route::get("/user-profile", "Controller@viewVue");
 //Logic
-Route::get("/reportJson", "ReportController@selectReport");
-Route::get("/export", "ReportController@export");
-
+    Route::get("/reportJson", "ReportController@selectReport");
+    Route::get("/export", "ReportController@export");
 //Others
-Auth::routes();
+    Route::get('logout', 'Auth\LoginController@logout')->name('logout');
+});
+

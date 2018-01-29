@@ -174,7 +174,8 @@
                                     <tr v-for="(vv,kk) in v">
                                         <td>{{kk}}</td>
                                         <td>
-                                            <table border='1' style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
+                                            <table border='1'
+                                                   style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
                                                 <tr v-for="(vvv,kkk) in vv">
                                                     <td>{{kkk}}</td>
                                                     <td>{{vvv.diff_inicial}}</td>

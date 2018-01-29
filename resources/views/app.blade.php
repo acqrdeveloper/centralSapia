@@ -11,16 +11,15 @@
     <title>Sapia</title>
 
     <!-- Styles -->
-{{--        <link rel="stylesheet" href="{{ asset('node_modules/vue-multiselect/dist/vue-multiselect.min.css') }}">--}}
-        <link rel="stylesheet" href="{{asset("dist/main.css")}}">
+    <link rel="stylesheet" href="{{asset("dist/main.css")}}">
 </head>
 {{--<body class="fixed-nav sticky-footer bg-dark sidenav-toggled" id="page-top">--}}
-<body class="fixed-nav sticky-footer bg-light sidenav-toggled" id="page-top">
+<body class="face-app fixed-nav sticky-footer bg-light sidenav-toggled" id="page-top">
 <div id="app">
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" id="mainNav">
         <a href="/home" class="navbar-brand">
-            <b>Sapia (Corporativo)</b>
+            <b>Sapia Corporation</b>
         </a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
                 data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"

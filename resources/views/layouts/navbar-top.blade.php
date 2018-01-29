@@ -107,7 +107,10 @@
                 <small>Status</small>
             </a>
             <div class="dropdown-divider"></div>
-            <a href="" class="dropdown-item text-danger" data-toggle="modal" data-target="#exampleModal">
+            {{--<a href="{{url("/logout")}}" class="dropdown-item text-danger" data-toggle="modal" data-target="#exampleModal">--}}
+                {{--<i class="fa fa-fw fa-sign-out"></i><b>Logout</b>--}}
+            {{--</a>--}}
+            <a href="{{url("/logout")}}" class="dropdown-item text-danger">
                 <i class="fa fa-fw fa-sign-out"></i><b>Logout</b>
             </a>
         </div>

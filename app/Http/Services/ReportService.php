@@ -110,8 +110,7 @@ class ReportService
                 $i = $k;
                 $j = $k + 1;
                 $total = 0;
-                $total_ocupacion = 0;
-                $total_ocupacion_backoffice = 0;
+
                 $temp_diff_ini = 0;
                 $temp_diff_fin = 0;
                 $set = false;
@@ -539,8 +538,6 @@ class ReportService
                     $temp_diff_ini = 0;
                     $temp_diff_fin = 0;
                     $total = 0;
-                    $total_ocupacion = 0;
-                    $total_ocupacion_backoffice = 0;
                 }
 
                 //Calcular Porcentajes

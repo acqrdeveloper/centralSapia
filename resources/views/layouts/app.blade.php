@@ -19,8 +19,7 @@
     @yield('content')
 </div>
 
-<footer class="sticky-footer"
-        style="width: 100% !important;background-color: transparent !important;color:#fff !important;">
+<footer class="sticky-footer" style="width: 100% !important;background-color: transparent !important;color:#fff !important;">
     <div class="container">
         <div class="text-center">
             <small>Copyright © Sapia Corporation {{date("Y")}}</small>

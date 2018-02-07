@@ -173,8 +173,7 @@
                         <tbody v-else-if="selectedFilter == 1 && !loading">
                         <tr v-for="(v,k) in dataReport">
                             <td>
-                                <table border='1'
-                                       style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
+                                <table border='1' style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
                                     <tr v-for="(vv,kk) in v">
                                         <td>{{kk}}</td>
                                         <td>
@@ -247,6 +246,7 @@
 
     export default {
         data: () => ({
+            moment:moment,
             loading: false,
             params: {
                 tipo: 1800,
@@ -280,15 +280,15 @@
                 this.change();
             },
             change() {
-                if (this.selectedFilter == '0') {
-                    if (this.selectedFecha != "" && this.selectedUser != "" && this.params.prol != "") {
+                if (this.selectedFilter === '0') {
+                    if (this.selectedFecha !== "" && this.selectedUser !== "" && this.params.prol !== "") {
                         this.params.puser_id = this.selectedUser.id;
                         this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
                         this.loading = true;
                         this.list();
                     }
                 } else {
-                    if (this.selectedFecha != "") {
+                    if (this.selectedFecha !== "") {
                         this.params.puser_id = 0;
                         this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
                         this.loading = true;
@@ -298,7 +298,7 @@
             },
             exportFile(ext, puser_id) {
                 this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
-                if (puser_id != undefined) {
+                if (puser_id !== undefined) {
                     return window.open("/export?ext=" + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' +puser_id+'&prol='+this.params.prol);
                 }else{
                     return window.open("/export?ext=" + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + this.params.puser_id+'&prol='+this.params.prol);

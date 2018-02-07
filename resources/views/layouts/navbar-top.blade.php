@@ -1,6 +1,6 @@
 
 <ul class="navbar-nav ml-auto">
-    <li class="nav-item dropdown">
+    <li class="nav-item dropdown" hidden>
         <a class="nav-link dropdown-toggle mr-lg-2" id="messagesDropdown" href="#" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-fw fa-envelope"></i>
@@ -42,7 +42,7 @@
             <a class="dropdown-item small" href="#">View all messages</a>
         </div>
     </li>
-    <li class="nav-item dropdown">
+    <li class="nav-item dropdown" hidden>
         <a class="nav-link dropdown-toggle mr-lg-2" id="alertsDropdown" href="#" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-fw fa-bell"></i>
@@ -95,21 +95,13 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle mr-lg-2" id="" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-fw fa-user"></i>
-            <b>{{auth()->user()->name}}</b>
+            <b>{{auth()->user()->username}}</b>
         </a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
             <router-link class="dropdown-item" :to="{name:'user-profile'}">
-                <i class="fa fa-fw fa-user-circle"></i>
                 <small>Profile</small>
             </router-link>
-            <a class="dropdown-item" href="#">
-                <i class="fa fa-fw fa-tag"></i>
-                <small>Status</small>
-            </a>
             <div class="dropdown-divider"></div>
-            {{--<a href="{{url("/logout")}}" class="dropdown-item text-danger" data-toggle="modal" data-target="#exampleModal">--}}
-                {{--<i class="fa fa-fw fa-sign-out"></i><b>Logout</b>--}}
-            {{--</a>--}}
             <a href="{{url("/logout")}}" class="dropdown-item text-danger">
                 <i class="fa fa-fw fa-sign-out"></i><b>Logout</b>
             </a>

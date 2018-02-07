@@ -37,20 +37,17 @@
                         </select>
                     </label>
                     <div class="btn-group dropdown btn-group-xs" role="group" aria-label="Reserve Options">
-                        <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " type="button"
-                                class="btn btn-success" title="Exportar por defecto">
+                        <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " type="button" class="btn btn-success" title="Exportar por defecto">
                             <i class="fa fa-file-excel-o fa-fw"></i>
                             <span>Excel</span>
                         </button>
                         <div class="btn-group open" role="group">
-                            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"
-                                    aria-expanded="true">
+                            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
                                 <li title="Exportar">
-                                    <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' "
-                                            class="dropdown-item text-success"><i class="fa fa-file-excel-o fa-fw"></i>
+                                    <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " class="dropdown-item text-success"><i class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Por Usuario</small>
                                     </button>
                                     <button @click="exportFile('xlsx',0)" class="dropdown-item text-success"><i
@@ -62,32 +59,27 @@
                         </div>
                     </div>
                     <div class="btn-group dropdown btn-group-xs" role="group">
-                        <button @click="exportFile('csv')" :disabled="params.puser_id == '' " type="button"
-                                class="btn btn-warning" title="Exportar por defecto">
+                        <button @click="exportFile('csv')" :disabled="params.puser_id == '' " type="button" class="btn btn-warning" title="Exportar por defecto">
                             <i class="fa fa-file-excel-o fa-fw"></i>
                             <span>Csv</span>
                         </button>
                         <div class="btn-group open" role="group">
-                            <button type="button" class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown"
-                                    aria-expanded="true">
+                            <button type="button" class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
                                 <li title="Exportar">
-                                    <button @click="exportFile('csv')" :disabled="params.puser_id == '' "
-                                            class="dropdown-item text-warning"><i class="fa fa-file-excel-o fa-fw"></i>
+                                    <button @click="exportFile('csv')" :disabled="params.puser_id == '' " class="dropdown-item text-warning"><i class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Por Usuario</small>
                                     </button>
-                                    <button @click="exportFile('csv',0)" class="dropdown-item text-warning"><i
-                                            class="fa fa-file-excel-o fa-fw"></i>
+                                    <button @click="exportFile('csv',0)" class="dropdown-item text-warning"><i class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Todos</small>
                                     </button>
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" title="consultar otra vez!" @click="refresh()"><i
-                            class="fa fa-fw fa-refresh"></i></button>
+                    <button class="btn btn-secondary" title="consultar otra vez!" @click="refresh()"><i class="fa fa-fw fa-refresh"></i></button>
                 </div>
             </div>
             <div class="card-body">
@@ -221,7 +213,7 @@
                         <tr>
                             <td colspan="auto" class="text-success text-center">
                                 <div style="padding: 2em 2em 0 2em">
-                                    <i class="fa fa-circle-o-notch fa-spin fa-2x"></i>
+                                    <i class="fa fa-circle-o-notch fa-spin fa-2x mb-2"></i>
                                     <p>Obteniendo Informacion!</p>
                                 </div>
                             </td>

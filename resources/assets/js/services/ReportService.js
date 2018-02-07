@@ -13,10 +13,10 @@ const REPORT_SERVICE = new Vuex.Store({
             Axios.get("reportJson", {params: self.params})
                 .then((response) => {
                     console.log(response);
-                    // if (response.data.load) {
-                    //     self.loading = false;
-                    //     self.dataReport = response.data.data;
-                    // }
+                    if (response.data.load) {
+                        self.loading = false;
+                        self.dataReport = response.data.data;
+                    }
                 })
                 .catch((error) => {
                     if (!error.response.data.load) {
@@ -53,8 +53,7 @@ const REPORT_SERVICE = new Vuex.Store({
                 });
         },
         usersToJson({commit}, {self}) {
-            Axios.get("http://apiexams.localhost.pe:1255/exams/listExamsUsers/2")
-            // Axios.get("usersToJson", {params: self.params})
+            Axios.get("usersToJson", {params: self.params})
                 .then((response) => {
                     if (response.data.load) {
                         self.loading = false;

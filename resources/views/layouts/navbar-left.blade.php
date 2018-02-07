@@ -1,6 +1,6 @@
     <ul class="navbar-nav navbar-sidenav" id="exampleAccordion" style="overflow-y: auto;overflow-x: hidden">
     <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-        <router-link :to="{name:'home'}" class="nav-link">
+        <router-link :to="'home'" class="nav-link">
             <i class="fa fa-fw fa-dashboard"></i>
             <span class="nav-link-text">Dashboard</span>
         </router-link>
@@ -13,23 +13,25 @@
         </a>
         <ul class="sidenav-second-level collapse" id="collapseMulti">
             <li>
-                <router-link :to="{name:'report'}" class="nav-link">
+                <router-link :to="'report'" class="nav-link">
                     <i class="fa fa-fw fa-area-chart"></i>
                     <span class="nav-link-text">By Hours</span>
                 </router-link>
             </li>
-            <li>
-                <a href="#">
-                    <i class="fa fa-fw fa-file-word-o"></i>
-                    <span>Statistic</span></a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="fa fa-fw fa-users"></i>
-                    <span>Events Users</span></a>
-            </li>
         </ul>
     </li>
+    <li class="nav-item" data-toggle="tooltip" data-placement="right">
+        <a href class="nav-link">
+            <i class="fa fa-fw fa-tasks"></i>
+            <span class="nav-link-text">Tasks</span>
+        </a>
+    </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right">
+            <a href class="nav-link">
+                <i class="fa fa-fw fa-calendar"></i>
+                <span class="nav-link-text">Shedule</span>
+            </a>
+        </li>
     <li hidden class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti"
            data-parent="#exampleAccordion">

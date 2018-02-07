@@ -11,7 +11,7 @@
     <title>Sapia</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{asset("dist/main.css")}}">
+    <link rel="stylesheet" href="{{asset("dist/css/main.css")}}">
 </head>
 {{--<body class="fixed-nav sticky-footer bg-dark sidenav-toggled" id="page-top">--}}
 <body class="face-app fixed-nav sticky-footer bg-light sidenav-toggled" id="page-top">
@@ -74,8 +74,8 @@
 </div>
 
 <!-- Scripts -->
-<script src="{{asset("dist/main.js")}}"></script>
-<script src="{{ asset('dist/app.js') }}"></script>
+<script src="{{asset("dist/js/main.js")}}"></script>
+<script src="{{ asset('dist/js/app.js') }}"></script>
 
 </body>
 </html>

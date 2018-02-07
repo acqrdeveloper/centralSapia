@@ -11,7 +11,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{asset("dist/main.css")}}">
+    <link rel="stylesheet" href="{{asset("dist/css/main.css")}}">
 </head>
 <body class="face-login">
 
@@ -22,12 +22,12 @@
 <footer class="sticky-footer" style="width: 100% !important;background-color: transparent !important;color:#fff !important;">
     <div class="container">
         <div class="text-center">
-            <small>Copyright © Sapia Corporation {{date("Y")}}</small>
+            <small>Copyright © Corporación Sapia {{date("Y")}}</small>
         </div>
     </div>
 </footer>
 
 <!-- Scripts -->
-<script src="{{asset("dist/main.js")}}"></script>
+<script src="{{asset("dist/js/main.js")}}"></script>
 </body>
 </html>

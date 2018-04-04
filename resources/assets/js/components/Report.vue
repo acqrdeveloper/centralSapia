@@ -1,5 +1,5 @@
 <template>
-    <section>
+    <div>
         <div class="card">
             <div class="card-header">
                 <div class="row">
@@ -8,38 +8,36 @@
                     </div>
                     <div class="col-6 m-auto">
                         <!--<div class="btn-group float-right" role="group" aria-label="Basic example">-->
-                            <!--<button type="submit" class="btn btn-primary"><i class="fa fa-filter fa-fw"></i>Filter Data</button>-->
-                            <!--<a href="" class="btn btn-secondary"><i class="fa fa-recycle fa-fw"></i>Clean Filter</a>-->
+                        <!--<button type="submit" class="btn btn-primary"><i class="fa fa-filter fa-fw"></i>Filter Data</button>-->
+                        <!--<a href="" class="btn btn-secondary"><i class="fa fa-recycle fa-fw"></i>Clean Filter</a>-->
                         <!--</div>-->
                     </div>
                 </div>
                 <hr>
                 <div class="form-inline">
-                    <component :is="'vue-datepicker'"
-                               v-model="selectedFecha"
-                               type="date"
-                               format="YYYY-MM-DD"
-                               lang="es"
-                               placeholder="Fecha"
-                               @input="change()"/>
+                    <date-picker v-model="selectedFecha"
+                                 type="date"
+                                 format="YYYY-MM-DD"
+                                 lang="es"
+                                 placeholder="Fecha"
+                                 @input="change()"/>
                     <label hidden>
                         <select v-model="selectedFilter" class="form-control" @change="change()">
                             <option value="0" selected>Filtrar por Usuario</option>
                             <option value="1" disabled>Filtrar Todos</option>
                         </select>
                     </label>
-                    <component v-if="selectedFilter == '0' "
-                               :is="'multiselect'"
-                               v-model="selectedUser"
-                               selectedLabel="Seleccionado"
-                               deselectLabel="Remover"
-                               selectLabel="Seleccionar"
-                               placeholder="Buscar"
-                               :options="dataUsers"
-                               label="value"
-                               track-by="id"
-                               class="w-50"
-                               @input="change()"/>
+                    <multiselect v-if="selectedFilter == '0' "
+                                 v-model="selectedUser"
+                                 selectedLabel="Seleccionado"
+                                 deselectLabel="Remover"
+                                 selectLabel="Seleccionar"
+                                 placeholder="Buscar"
+                                 :options="dataUsers"
+                                 label="value"
+                                 track-by="id"
+                                 class="w-50"
+                                 @input="change()"/>
                     <label>
                         <select v-model="params.prol" class="form-control" @change="change()">
                             <option value="user" selected>User</option>
@@ -47,17 +45,20 @@
                         </select>
                     </label>
                     <div class="btn-group dropdown btn-group-xs" role="group" aria-label="Reserve Options">
-                        <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " type="button" class="btn btn-success" title="Exportar por defecto">
+                        <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " type="button"
+                                class="btn btn-success" title="Exportar por defecto">
                             <i class="fa fa-file-excel-o fa-fw"></i>
                             <span>Excel</span>
                         </button>
                         <div class="btn-group open" role="group">
-                            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="true">
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
                                 <li title="Exportar">
-                                    <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " class="dropdown-item text-muted"><i class="fa fa-file-excel-o fa-fw"></i>
+                                    <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' "
+                                            class="dropdown-item text-muted"><i class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Por Usuario</small>
                                     </button>
                                     <button @click="exportFile('xlsx',0)" class="dropdown-item text-muted"><i
@@ -69,27 +70,32 @@
                         </div>
                     </div>
                     <div class="btn-group dropdown btn-group-xs" role="group">
-                        <button @click="exportFile('csv')" :disabled="params.puser_id == '' " type="button" class="btn btn-warning" title="Exportar por defecto">
+                        <button @click="exportFile('csv')" :disabled="params.puser_id == '' " type="button"
+                                class="btn btn-warning" title="Exportar por defecto">
                             <i class="fa fa-file-excel-o fa-fw"></i>
                             <span>Csv</span>
                         </button>
                         <div class="btn-group open" role="group">
-                            <button type="button" class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                            <button type="button" class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown"
+                                    aria-expanded="true">
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
                                 <li title="Exportar">
-                                    <button @click="exportFile('csv')" :disabled="params.puser_id == '' " class="dropdown-item"><i class="fa fa-file-excel-o fa-fw"></i>
+                                    <button @click="exportFile('csv')" :disabled="params.puser_id == '' "
+                                            class="dropdown-item"><i class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Por Usuario</small>
                                     </button>
-                                    <button @click="exportFile('csv',0)" class="dropdown-item"><i class="fa fa-file-excel-o fa-fw"></i>
+                                    <button @click="exportFile('csv',0)" class="dropdown-item"><i
+                                            class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Todos</small>
                                     </button>
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" title="consultar otra vez!" @click="refresh()"><i class="fa fa-fw fa-refresh"></i></button>
+                    <button class="btn btn-secondary" title="consultar otra vez!" @click="refresh()"><i
+                            class="fa fa-fw fa-refresh"></i></button>
                 </div>
             </div>
             <div class="card-body">
@@ -175,11 +181,13 @@
                         <tbody v-else-if="selectedFilter == 1 && !loading">
                         <tr v-for="(v,k) in dataReport">
                             <td>
-                                <table border='1' style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
+                                <table border='1'
+                                       style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
                                     <tr v-for="(vv,kk) in v">
                                         <td>{{kk}}</td>
                                         <td>
-                                            <table border='1' style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
+                                            <table border='1'
+                                                   style='width: 100%;font-family: Helvetica, Arial, sans-serif;font-size: 12px'>
                                                 <tr v-for="(vvv,kkk) in vv">
                                                     <td>{{kkk}}</td>
                                                     <td>{{vvv.diff_inicial}}</td>
@@ -224,98 +232,85 @@
                             <td colspan="auto" class="text-dark text-center">
                                 <div style="padding: 3em 2em 0 2em">
                                     <i class="fa fa-circle-o-notch fa-spin fa-2x mb-2"></i>
-                                    <p>Obteniendo Informacion!</p>
+                                    <p>Obteniendo Información!</p>
                                 </div>
                             </td>
                         </tr>
-                        <!--<tr>-->
-                            <!--<td colspan="auto" class="text-muted text-center">-->
-                                <!--<div style="padding: 2em 2em 0 2em">-->
-                                    <!--<i class="fa fa-circle-o-notch fa-spin fa-2x mb-2"></i>-->
-                                    <!--<p>Obteniendo Informacion!</p>-->
-                                <!--</div>-->
-                            <!--</td>-->
-                        <!--</tr>-->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 </template>
 
 <script>
-    import Vue from 'vue';
-    import Service from '../services/ReportService';
-    import DatePicker from 'vue2-datepicker';
-    import Multiselect from 'vue-multiselect';
-    import moment from 'moment';
+  import Service from '../services/ReportService'
+  import DatePicker from 'vue2-datepicker'
+  import Multiselect from 'vue-multiselect'
+  import moment from 'moment'
 
-    Vue.component('multiselect', Multiselect);
-    Vue.component('vue-datepicker', DatePicker);
-
-    export default {
-        data: () => ({
-            moment:moment,
-            loading: false,
-            params: {
-                tipo: 1800,
-                pfecha: "",
-                puser_id: "",
-                prol: "user",
-            },
-            dataReport: [],
-            dataUsers: [],
-            dataObj: {},
-            model_date_1: "",
-            model_date_2: "",
-            selectedFilter: "0",
-            selectedUser: "",
-            selectedFecha: moment().add("days", 1).format("YYYY-MM-DD")
-        }),
-        beforeCreate() {
-
-        },
-        created() {
-            this.usersToJson();
-        },
-        methods: {
-            usersToJson() {
-                Service.dispatch("usersToJson", {self: this});
-            },
-            list() {
-                Service.dispatch("reportJson", {self: this});
-            },
-            refresh() {
-                this.change();
-            },
-            change() {
-                if (this.selectedFilter === '0') {
-                    if (this.selectedFecha !== "" && this.selectedUser !== "" && this.params.prol !== "") {
-                        this.params.puser_id = this.selectedUser.id;
-                        this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
-                        this.loading = true;
-                        this.list();
-                    }
-                } else {
-                    if (this.selectedFecha !== "") {
-                        this.params.puser_id = 0;
-                        this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
-                        this.loading = true;
-                        this.list();
-                    }
-                }
-            },
-            exportFile(ext, puser_id) {
-                this.params.pfecha = moment(this.selectedFecha).format("YYYY-MM-DD");
-                if (puser_id !== undefined) {
-                    return window.open("/export?ext=" + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' +puser_id+'&prol='+this.params.prol);
-                }else{
-                    return window.open("/export?ext=" + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + this.params.puser_id+'&prol='+this.params.prol);
-                }
-            }
+  export default {
+    name: 'report',
+    components: {Multiselect, DatePicker},
+    data: () => ({
+      moment: moment,
+      loading: false,
+      params: {
+        tipo: 1800,
+        pfecha: '',
+        puser_id: '',
+        prol: 'user',
+      },
+      dataReport: [],
+      dataUsers: [],
+      dataObj: {},
+      model_date_1: '',
+      model_date_2: '',
+      selectedFilter: '0',
+      selectedUser: '',
+      selectedFecha: moment().add('days', 1).format('YYYY-MM-DD')
+    }),
+    created () {
+      this.usersToJson()
+    },
+    methods: {
+      usersToJson () {
+        Service.dispatch('usersToJson', {self: this})
+      },
+      list () {
+        Service.dispatch('reportJson', {self: this})
+      },
+      refresh () {
+        this.change()
+      },
+      change () {
+        if (this.selectedFilter === '0') {
+          if (this.selectedFecha !== '' && this.selectedUser !== '' && this.params.prol !== '') {
+            this.params.puser_id = this.selectedUser.id
+            this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+            this.loading = true
+            this.list()
+          }
+        } else {
+          if (this.selectedFecha !== '') {
+            this.params.puser_id = 0
+            this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+            this.loading = true
+            this.list()
+          }
         }
+      },
+      exportFile (ext, puser_id) {
+        this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+        if (puser_id !== undefined) {
+          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + puser_id + '&prol=' + this.params.prol)
+        } else {
+          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + this.params.puser_id + '&prol=' + this.params.prol)
+        }
+      }
     }
+  }
 </script>
 
 <style scoped>

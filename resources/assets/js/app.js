@@ -1,12 +1,12 @@
 import Vue from "vue";
-import {ROUTER} from "./router";
+import router from "./router";
 import Axios from "axios/index";
 import $ from "jquery";
 
 Axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 new Vue({
-    router: ROUTER,
+    router,
     methods: {
         //Funciones Globales
     }

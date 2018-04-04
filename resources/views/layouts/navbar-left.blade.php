@@ -1,37 +1,37 @@
-    <ul class="navbar-nav navbar-sidenav" id="exampleAccordion" style="overflow-y: auto;overflow-x: hidden">
-    <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-        <router-link :to="'home'" class="nav-link">
-            <i class="fa fa-fw fa-dashboard"></i>
-            <span class="nav-link-text">Dashboard</span>
-        </router-link>
+<ul class="navbar-nav navbar-sidenav" id="exampleAccordion" style="overflow-y: auto;overflow-x: hidden">
+    <li hidden class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+    <router-link :to="'home'" class="nav-link">
+    <i class="fa fa-fw fa-dashboard"></i>
+    <span class="nav-link-text">Dashboard</span>
+    </router-link>
     </li>
     <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Reports">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti"
            data-parent="#exampleAccordion">
-            <i class="fa fa-fw fa-sitemap"></i>
-            <span class="nav-link-text">Reports</span>
+            <i class="fa fa-fw fa-file-text"></i>
+            <span class="nav-link-text">Reportes</span>
         </a>
         <ul class="sidenav-second-level collapse" id="collapseMulti">
             <li>
                 <router-link :to="'report'" class="nav-link">
                     <i class="fa fa-fw fa-area-chart"></i>
-                    <span class="nav-link-text">By Hours</span>
+                    <span class="nav-link-text">Por Hora</span>
                 </router-link>
             </li>
         </ul>
     </li>
-    <li class="nav-item" data-toggle="tooltip" data-placement="right">
+    <li hidden class="nav-item" data-toggle="tooltip" data-placement="right">
         <a href class="nav-link">
             <i class="fa fa-fw fa-tasks"></i>
             <span class="nav-link-text">Tasks</span>
         </a>
     </li>
-        <li class="nav-item" data-toggle="tooltip" data-placement="right">
-            <a href class="nav-link">
-                <i class="fa fa-fw fa-calendar"></i>
-                <span class="nav-link-text">Shedule</span>
-            </a>
-        </li>
+    <li hidden class="nav-item" data-toggle="tooltip" data-placement="right">
+        <a href class="nav-link">
+            <i class="fa fa-fw fa-calendar"></i>
+            <span class="nav-link-text">Shedule</span>
+        </a>
+    </li>
     <li hidden class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti"
            data-parent="#exampleAccordion">

@@ -38,28 +38,30 @@ class LoginController extends Controller
      */
     public function __construct()
     {
+//        $this->middleware('database');
         $this->middleware('guest')->except('logout');
     }
 
     public function fnDoLogin(Request $request)
     {
-        switch ($request->proyecto) {
-            case 0 :
-//                config("database.default","mysql");
-//                Config::set('database.default', "mysql");
-                DB::connection('mysql');
-                break;
-            case 1:
-//                config("database.default","connect_interbank");
-//                Config::set('database.default', "connect_interbank");
-                DB::connection('connect_interbank');
-                break;
-            case 2:
-//                config("database.default","connect_corporativo");
-//                Config::set('database.default', "connect_corporativo");
-                DB::connection('connect_corporativo');
-                break;
-        }
+//        dd($request->proyecto);
+//        switch ($request->proyecto) {
+//            case "0" :
+////                config("database.default","mysql");
+////                Config::set('database.default', "mysql");
+////                DB::connection('mysql');
+//                break;
+//            case "1":
+////                config("database.default","connect_interbank");
+////                Config::set('database.default', "connect_interbank");
+////                DB::connection('connect_interbank');
+//                break;
+//            case 2:
+////                config("database.default","connect_corporativo");
+////                Config::set('database.default', "connect_corporativo");
+////                DB::connection('connect_corporativo');
+//                break;
+//        }
 
 //        dd(config("database.default"));
 
@@ -67,17 +69,17 @@ class LoginController extends Controller
 //        if (isset($emailToArray[1])) {
 //            $email = $request->email . "@sapia.com.pe";
 //        } else {
-            $email = $request->email;
 //        }
+
+        $email = $request->email;
         $pwd = $request->password;
-        $this->validate($request, [
-            $this->username() => 'required|string',
-            'password' => 'required|string',
-        ]);
+
+        $this->validate($request, [$this->username() => 'required|string', 'password' => 'required|string']);
         // Process login
         $credentials = ["email" => $email, "password" => $pwd];
         $rememberme = $request->has('rememberme') ? true : false;
         if ($this->guard()->attempt($credentials, $rememberme)) {
+//            session(["mydatabase" =>auth()->user()->database]);
             if (auth()->once($credentials)) {
                 switch (auth()->user()->status) {
                     case 'I':
@@ -89,6 +91,7 @@ class LoginController extends Controller
 //                        $request->session()->regenerate();
 //                        $this->clearLoginAttempts($request);
                         // Redirect page login
+
                         if ($this->attemptLogin($request)) {
                             return $this->sendLoginResponse($request);
                         }

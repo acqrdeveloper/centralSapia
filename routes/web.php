@@ -28,17 +28,17 @@ Route::group(['middleware' => ['guest']], function () {
 });
 
 Route::group(['middleware' => ['auth', 'web']], function () {
-    Route::get('/', "Controller@viewVue");
+    Route::get('/', 'Controller@viewVue')->name('home');
+
     Route::get("/reportToJson", "ReportController@doReport");
     Route::get("/usersToJson", "ReportController@getUsers");
-//Views
+    //Views
     Route::get("/report", "Controller@viewVue");
-    Route::get('/home', 'Controller@viewVue')->name('home');
     Route::get("/user-profile", "Controller@viewVue");
-//Logic
+    //Logic
     Route::get("/reportJson", "ReportController@selectReport");
     Route::get("/export", "ReportController@export");
-//Others
+    //Others
     Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 });
 

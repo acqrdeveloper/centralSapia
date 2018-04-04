@@ -1,5 +1,8 @@
 @extends('layouts.app')
 @section('content')
+    <div class="m-5 text-center">
+        <img src="{{asset('logo.svg')}}" alt="" width="100px">
+    </div>
     <div class="card card-login mx-auto mt-5">
         <div class="card-header">Sign In</div>
         <div class="card-body">
@@ -10,7 +13,7 @@
                     <select name="proyecto" class="form-control mb-1">
                         <option value="0">Administrativo</option>
                         <option value="1">Interbank</option>
-                        <option value="2">Claro Corporativo</option>
+                        <option value="2" selected>Corporativo</option>
                         <option value="3">Entel</option>
                         <option value="4">Empresas</option>
                         <option value="5">Calidda</option>
@@ -48,17 +51,17 @@
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Log In</button>
             </form>
-            <div>
+            <div hidden>
                 <br>
                 <div class="row">
                     <div class="col-6">
                         <div class="text-left text-nowrap">
-                            <a class="small" href="{{url("/register")}}">Register an Account</a>
+                            <a class="small text-dark" href="{{url("/register")}}">Register an Account</a>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="text-right text-nowrap">
-                            <a class="small" href="{{url("/register")}}">Forgot Password?</a>
+                            <a class="small text-dark" href="{{url("/register")}}">Forgot Password?</a>
                         </div>
                     </div>
                 </div>

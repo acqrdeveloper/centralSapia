@@ -2,7 +2,17 @@
     <section>
         <div class="card">
             <div class="card-header">
-                <h4><i class="fa fa-file"></i>Report of 1/2 Hour</h4>
+                <div class="row">
+                    <div class="col-6 m-auto">
+                        <span class="card-title">Reporte por Hora</span>
+                    </div>
+                    <div class="col-6 m-auto">
+                        <!--<div class="btn-group float-right" role="group" aria-label="Basic example">-->
+                            <!--<button type="submit" class="btn btn-primary"><i class="fa fa-filter fa-fw"></i>Filter Data</button>-->
+                            <!--<a href="" class="btn btn-secondary"><i class="fa fa-recycle fa-fw"></i>Clean Filter</a>-->
+                        <!--</div>-->
+                    </div>
+                </div>
                 <hr>
                 <div class="form-inline">
                     <component :is="'vue-datepicker'"
@@ -47,10 +57,10 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
                                 <li title="Exportar">
-                                    <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " class="dropdown-item text-success"><i class="fa fa-file-excel-o fa-fw"></i>
+                                    <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " class="dropdown-item text-muted"><i class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Por Usuario</small>
                                     </button>
-                                    <button @click="exportFile('xlsx',0)" class="dropdown-item text-success"><i
+                                    <button @click="exportFile('xlsx',0)" class="dropdown-item text-muted"><i
                                             class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Todos</small>
                                     </button>
@@ -69,10 +79,10 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
                                 <li title="Exportar">
-                                    <button @click="exportFile('csv')" :disabled="params.puser_id == '' " class="dropdown-item text-warning"><i class="fa fa-file-excel-o fa-fw"></i>
+                                    <button @click="exportFile('csv')" :disabled="params.puser_id == '' " class="dropdown-item"><i class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Por Usuario</small>
                                     </button>
-                                    <button @click="exportFile('csv',0)" class="dropdown-item text-warning"><i class="fa fa-file-excel-o fa-fw"></i>
+                                    <button @click="exportFile('csv',0)" class="dropdown-item"><i class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Todos</small>
                                     </button>
                                 </li>
@@ -211,13 +221,21 @@
                         </tbody>
                         <tbody v-else>
                         <tr>
-                            <td colspan="auto" class="text-success text-center">
-                                <div style="padding: 2em 2em 0 2em">
+                            <td colspan="auto" class="text-dark text-center">
+                                <div style="padding: 3em 2em 0 2em">
                                     <i class="fa fa-circle-o-notch fa-spin fa-2x mb-2"></i>
                                     <p>Obteniendo Informacion!</p>
                                 </div>
                             </td>
                         </tr>
+                        <!--<tr>-->
+                            <!--<td colspan="auto" class="text-muted text-center">-->
+                                <!--<div style="padding: 2em 2em 0 2em">-->
+                                    <!--<i class="fa fa-circle-o-notch fa-spin fa-2x mb-2"></i>-->
+                                    <!--<p>Obteniendo Informacion!</p>-->
+                                <!--</div>-->
+                            <!--</td>-->
+                        <!--</tr>-->
                         </tbody>
                     </table>
                 </div>

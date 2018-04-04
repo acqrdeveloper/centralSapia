@@ -1,5 +1,5 @@
 
-<ul class="navbar-nav ml-auto">
+<ul hidden class="navbar-nav ml-auto">
     <li class="nav-item dropdown" hidden>
         <a class="nav-link dropdown-toggle mr-lg-2" id="messagesDropdown" href="#" data-toggle="dropdown"
            aria-haspopup="true" aria-expanded="false">
@@ -104,6 +104,41 @@
             <div class="dropdown-divider"></div>
             <a href="{{url("/logout")}}" class="dropdown-item text-danger">
                 <i class="fa fa-fw fa-sign-out"></i><b>Logout</b>
+            </a>
+        </div>
+    </li>
+</ul>
+
+
+<ul class="navbar-nav ml-auto">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle"
+           href="#"
+           data-toggle="dropdown"
+           aria-haspopup="false"
+           aria-expanded="false">
+            <span class="h6">
+                {{auth()->user()->primer_nombre}} {{auth()->user()->apellido_paterno}}
+                <span class="small text-muted">( {{auth()->user()->email}} )</span>
+            </span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right mt-3 w-75" aria-labelledby="alertsDropdown">
+            {{--<a href class="dropdown-item text-muted">--}}
+                {{--<i class="fa fa-user fa-fw"></i>--}}
+                {{--<span>Profile User</span>--}}
+            {{--</a>--}}
+            {{--<a href class="dropdown-item text-muted">--}}
+                {{--<i class="fa fa-cogs fa-fw"></i>--}}
+                {{--<span>Preferences</span>--}}
+            {{--</a>--}}
+            {{--<a href class="dropdown-item text-muted">--}}
+                {{--<i class="fa fa-tasks fa-fw"></i>--}}
+                {{--<span>Theme</span>--}}
+            {{--</a>--}}
+            {{--<div class="dropdown-divider"></div>--}}
+            <a href="{{route('logout')}}" class="dropdown-item text-danger">
+                <i class="fa fa-sign-out fa-fw"></i>
+                <span>Logout</span>
             </a>
         </div>
     </li>

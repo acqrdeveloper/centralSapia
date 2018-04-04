@@ -9,6 +9,16 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     <!-- Styles -->
     <link rel="stylesheet" href="{{asset("dist/css/main.css")}}">
+    <style>
+        .form-control:focus{
+            color: #495057;
+            background-color: #fff;
+            border-color: #343a40;
+            outline: 0;
+            -webkit-box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.25);
+        }
+    </style>
 </head>
 <body class="face-login">
 

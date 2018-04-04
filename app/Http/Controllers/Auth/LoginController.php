@@ -29,7 +29,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -38,42 +38,18 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-//        $this->middleware('database');
         $this->middleware('guest')->except('logout');
     }
 
     public function fnDoLogin(Request $request)
     {
-//        dd($request->proyecto);
-//        switch ($request->proyecto) {
-//            case "0" :
-////                config("database.default","mysql");
-////                Config::set('database.default', "mysql");
-////                DB::connection('mysql');
-//                break;
-//            case "1":
-////                config("database.default","connect_interbank");
-////                Config::set('database.default', "connect_interbank");
-////                DB::connection('connect_interbank');
-//                break;
-//            case 2:
-////                config("database.default","connect_corporativo");
-////                Config::set('database.default', "connect_corporativo");
-////                DB::connection('connect_corporativo');
-//                break;
-//        }
-
-//        dd(config("database.default"));
-
-//        $emailToArray = explode("@", $request->email);
-//        if (isset($emailToArray[1])) {
-//            $email = $request->email . "@sapia.com.pe";
-//        } else {
-//        }
-
-        $email = $request->email;
+        $emailToArray = explode("@", $request->email);
+        if (isset($emailToArray[1])) {
+            $email = $request->email;
+        } else {
+            $email = $emailToArray[0]. "@sapia.com.pe";
+        }
         $pwd = $request->password;
-
         $this->validate($request, [$this->username() => 'required|string', 'password' => 'required|string']);
         // Process login
         $credentials = ["email" => $email, "password" => $pwd];

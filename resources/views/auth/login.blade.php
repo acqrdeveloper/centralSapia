@@ -25,8 +25,7 @@
                 <div class="form-group">
                     <label>Email address</label>
                     <div class="input-group mb-1">
-                        <input name="email" class="form-control" type="text" placeholder="Enter email" title="Registrar"
-                               value="{{old("email")}}">
+                        <input name="email" class="form-control" type="text" placeholder="Enter username or email" title="Registrar" value="{{old("email")}}" required>
                         <div class="input-group-append">
                             <span class="input-group-text">@sapia.com.pe</span>
                         </div>
@@ -37,15 +36,15 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input name="password" class="form-control mb-1" type="password" placeholder="Password">
+                    <input name="password" class="form-control mb-1" type="password" placeholder="Password" required>
                     @if ($errors->has('password'))
                         <span class="help-block"><small><strong>{{ $errors->first('password') }}</strong></small></span>
                     @endif
                 </div>
                 <div class="form-group">
                     <div class="form-check">
-                        <label class="form-check-label"><input name="rememberme" class="form-check-input"
-                                                               type="checkbox" {{ old("rememberme") ? "checked" : "" }}>
+                        <label class="form-check-label">
+                            <input name="rememberme" class="form-check-input" type="checkbox" {{ old("rememberme") ? "checked" : "" }}/>
                             Remember Password</label>
                     </div>
                 </div>

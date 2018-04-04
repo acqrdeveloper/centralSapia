@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Sapia</title>
+    <title>Sapia | Reports</title>
     <!-- Styles -->
     <link rel="stylesheet" href="{{asset("dist/css/main.css")}}">
     <style>
-        .form-control:focus{
+        .form-control:focus {
             color: #495057;
             background-color: #fff;
             border-color: #343a40;
@@ -20,13 +20,10 @@
         }
     </style>
 </head>
-{{--<body class="fixed-nav sticky-footer bg-dark sidenav-toggled" id="page-top">--}}
 <body class="face-app fixed-nav sticky-footer bg-light sidenav-toggled" id="page-top">
 @if(auth()->check())
     <script>
-      window.onload = () => {
-        window.localStorage.setItem('data_auth', '{!! auth()->user() !!}')
-      }
+      window.localStorage.setItem('data_auth', '{!! auth()->user() !!}')
     </script>
 @endif
 <div id="app">

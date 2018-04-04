@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Sapia | Login</title>
     <!-- Styles -->
     <link rel="stylesheet" href="{{asset("dist/css/main.css")}}">
     <style>
-        .form-control:focus{
+        .form-control:focus {
             color: #495057;
             background-color: #fff;
             border-color: #343a40;
@@ -21,7 +21,11 @@
     </style>
 </head>
 <body class="face-login">
-
+@if(auth()->guest())
+    <script>
+      window.localStorage.removeItem('data_auth')
+    </script>
+@endif
 <div class="container">
     @yield('content')
 </div>

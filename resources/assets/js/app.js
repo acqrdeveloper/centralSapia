@@ -9,6 +9,7 @@ new Vue({
     router,
     methods: {
         //Funciones Globales
+
     }
 }).$mount('#app');
 

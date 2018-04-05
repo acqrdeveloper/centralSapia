@@ -53,7 +53,7 @@ class ReportController extends Controller
 
     function reportByUserAll($request)
     {
-        ini_set('max_execution_time', 300);
+//        ini_set('max_execution_time', 300);
         $users = DB::select("select id,primer_nombre,segundo_nombre,apellido_paterno,apellido_materno from users");
         $data = [];
         foreach ($users as $key => $user) {

@@ -6,12 +6,7 @@
                     <div class="col-6 m-auto">
                         <span class="card-title">Reporte por Hora</span>
                     </div>
-                    <div class="col-6 m-auto">
-                        <!--<div class="btn-group float-right" role="group" aria-label="Basic example">-->
-                        <!--<button type="submit" class="btn btn-primary"><i class="fa fa-filter fa-fw"></i>Filter Data</button>-->
-                        <!--<a href="" class="btn btn-secondary"><i class="fa fa-recycle fa-fw"></i>Clean Filter</a>-->
-                        <!--</div>-->
-                    </div>
+                    <div class="col-6 m-auto"></div>
                 </div>
                 <hr>
                 <div class="form-inline">
@@ -21,14 +16,13 @@
                                  lang="es"
                                  placeholder="Fecha"
                                  @input="change()"/>
-                    <label hidden>
-                        <select v-model="selectedFilter" class="form-control" @change="change()">
-                            <option value="0" selected>Filtrar por Usuario</option>
-                            <option value="1" disabled>Filtrar Todos</option>
-                        </select>
-                    </label>
-                    <multiselect v-if="selectedFilter == '0' "
-                                 v-model="selectedUser"
+                    <date-picker v-model="selectedFechaFin"
+                                 type="date"
+                                 format="YYYY-MM-DD"
+                                 lang="es"
+                                 placeholder="Fecha"
+                                 @input="change()"/>
+                    <multiselect v-model="selectedUser"
                                  selectedLabel="Seleccionado"
                                  deselectLabel="Remover"
                                  selectLabel="Seleccionar"
@@ -69,38 +63,38 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="btn-group dropdown btn-group-xs" role="group">
-                        <button @click="exportFile('csv')" :disabled="params.puser_id == '' " type="button"
-                                class="btn btn-warning" title="Exportar por defecto">
-                            <i class="fa fa-file-excel-o fa-fw"></i>
-                            <span>Csv</span>
-                        </button>
-                        <div class="btn-group open" role="group">
-                            <button type="button" class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown"
-                                    aria-expanded="true">
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
-                                <li title="Exportar">
-                                    <button @click="exportFile('csv')" :disabled="params.puser_id == '' "
-                                            class="dropdown-item"><i class="fa fa-file-excel-o fa-fw"></i>
-                                        <small>Por Usuario</small>
-                                    </button>
-                                    <button @click="exportFile('csv',0)" class="dropdown-item"><i
-                                            class="fa fa-file-excel-o fa-fw"></i>
-                                        <small>Todos</small>
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary" title="consultar otra vez!" @click="refresh()"><i
-                            class="fa fa-fw fa-refresh"></i></button>
+                    <button class="btn btn-secondary" title="actualizar lista!" @click="refresh()">
+                        <i class="fa fa-fw fa-refresh"></i>
+                    </button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table small table-condensed">
+                    <table v-if="!loading && selectedUser == null && dataReport.length == 0" style="width: 100%">
+                        <tbody>
+                        <tr>
+                            <td colspan="auto" class="text-dark text-center">
+                                <div style="padding: 2em 2em 0 2em">
+                                    <i class="fa fa-exclamation-triangle fa-2x mb-2"></i>
+                                    <p>No hay información disponible!</p>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <table v-if="loading && selectedUser != null && dataReport.length == 0" style="width: 100%">
+                        <tbody>
+                        <tr>
+                            <td colspan="auto" class="text-dark text-center">
+                                <div style="padding: 2em 2em 0 2em">
+                                    <i class="fa fa-circle-o-notch fa-spin fa-2x mb-2"></i>
+                                    <p>Obteniendo Información!</p>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <table v-if="!loading && selectedUser != null" class="table small table-condensed">
                         <thead v-if="selectedFilter == 0 && !loading">
                         <tr>
                             <th>Rango Hora</th>
@@ -137,7 +131,7 @@
                             <th>Nivel Ocupacion Backoffice</th>
                         </tr>
                         </thead>
-                        <thead v-else-if="selectedFilter == 1 && !loading">
+                        <thead v-if="selectedFilter == 1 && !loading">
                         <tr>
                             <th colspan="29">Full Users</th>
                         </tr>
@@ -178,7 +172,7 @@
                             <td><b>{{value.nivel_ocupacion_backoffice}}%</b></td>
                         </tr>
                         </tbody>
-                        <tbody v-else-if="selectedFilter == 1 && !loading">
+                        <tbody v-if="selectedFilter == 1 && !loading">
                         <tr v-for="(v,k) in dataReport">
                             <td>
                                 <table border='1'
@@ -227,16 +221,6 @@
                             </td>
                         </tr>
                         </tbody>
-                        <tbody v-else>
-                        <tr>
-                            <td colspan="auto" class="text-dark text-center">
-                                <div style="padding: 3em 2em 0 2em">
-                                    <i class="fa fa-circle-o-notch fa-spin fa-2x mb-2"></i>
-                                    <p>Obteniendo Información!</p>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
                     </table>
                 </div>
             </div>
@@ -268,8 +252,9 @@
       model_date_1: '',
       model_date_2: '',
       selectedFilter: '0',
-      selectedUser: '',
-      selectedFecha: moment().add('days', 1).format('YYYY-MM-DD')
+      selectedUser: null,
+      selectedFecha: moment().add(1,'days').format('YYYY-MM-DD'),
+      selectedFechaFin: moment().add( 1,'days').format('YYYY-MM-DD'),
     }),
     created () {
       this.getUsers()
@@ -285,20 +270,27 @@
         this.change()
       },
       change () {
-        if (this.selectedFilter === '0') {
-          if (this.selectedFecha !== '' && this.selectedUser !== '' && this.params.prol !== '') {
-            this.params.puser_id = this.selectedUser.id
-            this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
-            this.loading = true
-            this.getReports()
+        this.loading = true
+        if (this.selectedUser != null) {
+          this.dataReport = []
+          if (this.selectedFilter === '0') {
+            if (this.selectedFecha !== '' && this.selectedUser !== '' && this.params.prol !== '') {
+              this.params.puser_id = this.selectedUser.id
+              this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+              this.getReports()
+            }
+          } else {
+            if (this.selectedFecha !== '') {
+              this.params.puser_id = 0
+              this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+              this.getReports()
+            }
           }
         } else {
-          if (this.selectedFecha !== '') {
-            this.params.puser_id = 0
-            this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
-            this.loading = true
-            this.getReports()
-          }
+          this.loading = false
+          this.params.puser_id = ''
+          this.selectedUser = null
+          this.dataReport = []
         }
       },
       exportFile (ext, puser_id) {

@@ -21,6 +21,7 @@ class ReportService
 
     function reportToJsonService($request = null, $option = null)
     {
+        ini_set('max_execution_time', 300);
         $hours = [
             "00:00:00",
             "00:30:00",

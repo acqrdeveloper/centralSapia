@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -45,33 +44,19 @@ class LoginController extends Controller
     {
         $emailToArray = explode("@", $request->email);
         if (isset($emailToArray[1])) {
-            $email = $request->email;
+            $request->email = $request->get('email');
         } else {
-            $email = $emailToArray[0]. "@sapia.com.pe";
+            $request->email = $emailToArray[0] . "@sapia.com.pe";
         }
-        $pwd = $request->password;
         $this->validate($request, [$this->username() => 'required|string', 'password' => 'required|string']);
         // Process login
-        $credentials = ["email" => $email, "password" => $pwd];
+        $credentials = ['email' => $request->email, 'password' => $request->password];
         $rememberme = $request->has('rememberme') ? true : false;
+        User::where('email', $request->email)->update(['api_token' => Hash::make(100)]);
         if ($this->guard()->attempt($credentials, $rememberme)) {
-//            session(["mydatabase" =>auth()->user()->database]);
             if (auth()->once($credentials)) {
-                switch (auth()->user()->status) {
-                    case 'I':
-                        $this->guard()->logout();
-                        $request->session()->invalidate();
-                        return redirect()->to('/login')->withInput()->withErrors('Your session has expired because your account is deactivated.');
-                        break;
-                    default:
-//                        $request->session()->regenerate();
-//                        $this->clearLoginAttempts($request);
-                        // Redirect page login
-
-                        if ($this->attemptLogin($request)) {
-                            return $this->sendLoginResponse($request);
-                        }
-                        break;
+                if ($this->attemptLogin($request)) {
+                    return $this->sendLoginResponse($request);
                 }
             }
         }

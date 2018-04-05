@@ -13,6 +13,10 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['verify.apitoken:api']], function () {
+
+    Route::get("/get-report", "ReportController@doReport");
+    Route::get("/get-users", "ReportController@getUsers");
+    Route::get("/select-report", "ReportController@selectReport");
+
 });

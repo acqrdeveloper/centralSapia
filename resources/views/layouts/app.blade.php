@@ -26,7 +26,7 @@
       window.localStorage.removeItem('data_auth')
     </script>
 @endif
-<div class="container">
+<div class="container mb-5">
     @yield('content')
 </div>
 

@@ -1,9 +1,9 @@
 <ul class="navbar-nav navbar-sidenav" id="exampleAccordion" style="overflow-y: auto;overflow-x: hidden">
     <li hidden class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-    <router-link :to="'home'" class="nav-link">
-    <i class="fa fa-fw fa-dashboard"></i>
-    <span class="nav-link-text">Dashboard</span>
-    </router-link>
+        <router-link :to="'home'" class="nav-link">
+            <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">Dashboard</span>
+        </router-link>
     </li>
     <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Reports">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti"

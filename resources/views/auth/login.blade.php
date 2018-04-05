@@ -44,8 +44,7 @@
                 <div class="form-group">
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input name="rememberme" class="form-check-input" type="checkbox" {{ old("rememberme") ? "checked" : "" }}/>
-                            Remember Password</label>
+                            <input name="rememberme" class="form-check-input" type="checkbox" {{ old("rememberme") ? "checked" : "" }}/>Remember Password</label>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Log In</button>

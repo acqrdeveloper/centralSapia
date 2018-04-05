@@ -48,7 +48,7 @@
       data_about: {}
     }),
     created () {
-      this.data_auth = JSON.parse(window.localStorage.getItem('data_auth'))
+      this.data_auth = JSON.parse(window.localStorage.getItem('data_auth'));
       this.data_about = ['1.png', '2.png', '3.png', '4.png', '5.png']
     },
     methods: {

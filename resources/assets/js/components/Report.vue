@@ -272,14 +272,14 @@
       selectedFecha: moment().add('days', 1).format('YYYY-MM-DD')
     }),
     created () {
-      this.usersToJson()
+      this.getUsers()
     },
     methods: {
-      usersToJson () {
-        Service.dispatch('usersToJson', {self: this})
+      getUsers () {
+        Service.dispatch('getUsers', {self: this})
       },
-      list () {
-        Service.dispatch('reportJson', {self: this})
+      getReports () {
+        Service.dispatch('getReports', {self: this})
       },
       refresh () {
         this.change()
@@ -290,23 +290,23 @@
             this.params.puser_id = this.selectedUser.id
             this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
             this.loading = true
-            this.list()
+            this.getReports()
           }
         } else {
           if (this.selectedFecha !== '') {
             this.params.puser_id = 0
             this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
             this.loading = true
-            this.list()
+            this.getReports()
           }
         }
       },
       exportFile (ext, puser_id) {
         this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
         if (puser_id !== undefined) {
-          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + puser_id + '&prol=' + this.params.prol)
+          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + puser_id + '&prol=' + this.params.prol + '&pusername=' + this.selectedUser.value)
         } else {
-          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + this.params.puser_id + '&prol=' + this.params.prol)
+          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + this.params.puser_id + '&prol=' + this.params.prol + '&pusername=' + this.selectedUser.value)
         }
       }
     }

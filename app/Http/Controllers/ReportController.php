@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReportRequest;
 use App\Http\Services\ReportService;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel;
-use PHPExcel_IOFactory;
+use Exception;
 
 class ReportController extends Controller
 {
@@ -19,55 +18,63 @@ class ReportController extends Controller
 
     function getUsers()
     {
-        $data = [];
-        $dataUsers = DB::select("SELECT id,CONCAT(users.apellido_paterno,' ',users.apellido_materno,', ',users.primer_nombre) AS 'nameComplete',username FROM users;");
-        foreach ($dataUsers as $v) {
-            array_push($data, ["id" => $v->id, "value" => $v->nameComplete]);
+        try {
+            $data = [];
+            $dataUsers = DB::select("SELECT id,CONCAT(users.apellido_paterno,' ',users.apellido_materno,', ',users.primer_nombre) AS 'nameComplete',username FROM users;");
+            foreach ($dataUsers as $v) {
+                array_push($data, ["id" => $v->id, "value" => $v->nameComplete]);
+            }
+            return response()->json($data, 200);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), 412);
         }
-        $rpta["load"] = true;
-        $rpta["data"] = $data;
-        return response()->json($rpta);
     }
 
     function selectReport(ReportRequest $request)
     {
-        $rpta = null;
-        if ($request->puser_id > 0) {
-            $rpta = $this->byUser($request);
-        } else {
-            $rpta = $this->byUserAll($request);
+        $data = null;
+        try {
+            if ($request->puser_id > 0) {
+                $data = $this->reportByUser($request);
+            } else {
+                $data = $this->reportByUserAll($request);
+            }
+            return response()->json($data, 200);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), 412);
         }
-        return response()->json($rpta);
+
     }
 
-    function byUser($request)
+    function reportByUser($request)
     {
         return $this->service->reportToJsonService($request);
     }
 
-    function byUserAll($request)
+    function reportByUserAll($request)
     {
         ini_set('max_execution_time', 300);
         $users = DB::select("select id,primer_nombre,segundo_nombre,apellido_paterno,apellido_materno from users");
         $data = [];
         foreach ($users as $key => $user) {
-            $newrpta = $this->service->reportToJsonService($request, ["user" => $user]);
-            array_push($data, [$user->primer_nombre . ' ' . $user->apellido_paterno . ' ' . $user->apellido_materno => $newrpta["data"]]);
+            $newdata = $this->service->reportToJsonService($request, ["user" => $user]);
+            array_push($data, [$user->primer_nombre . ' ' . $user->apellido_paterno . ' ' . $user->apellido_materno => $newdata]);
         }
-        $this->fnSuccess($data);
-        return $this->rpta;
+        return $data;
     }
 
     public function export(ReportRequest $request)
     {
         try {
             //Request:
-            $filename = "byAll";
+            $filename = "byUserAll";
             if ($request->puser_id > 0) {
+                $sheetname = $request->pusername;
                 $filename = "byUser";
-                $rpta = $this->byUser($request);
+                $data = $this->reportByUser($request);
             } else {
-                $rpta = $this->byUserAll($request);
+                $sheetname = $filename;
+                $data = $this->reportByUserAll($request);
             }
             //Usando Maatwebsite Excel Laravel
             /*
@@ -101,7 +108,7 @@ class ReportController extends Controller
             */
             //Usando PHPExcel library
             $objPHPExcel = new PHPExcel();
-            $objPHPExcel->getActiveSheet(1)->setTitle($filename);
+            $objPHPExcel->getActiveSheet(1)->setTitle($sheetname);
 
             if ($request->puser_id > 0) {
                 $objPHPExcel->getActiveSheet(1)->getStyle('A1:AF1')->applyFromArray($this->colorFillNoneSolid);
@@ -132,7 +139,7 @@ class ReportController extends Controller
 
             if ($request->puser_id > 0) {
                 //First
-                foreach ($rpta["data"] as $k => $v) {
+                foreach ($data as $k => $v) {
                     $v = (object)$v;
                     $worksheet->setCellValue($columns[0] . $i, $k);
                     $worksheet->setCellValue($columns[1] . $i, $v->diff_inicial / 86400);
@@ -165,13 +172,13 @@ class ReportController extends Controller
                     $worksheet->setCellValue($columns[28] . $i, $v->diff_final / 86400);
                     $worksheet->setCellValue($columns[29] . $i, $v->total / 86400);
                     $objPHPExcel->getActiveSheet(1)->getStyle('B' . $i . ':AD' . $i)->getNumberFormat()->setFormatCode("HH:mm:ss");
-                    $worksheet->setCellValue($columns[30] . $i, $v->nivel_ocupacion." %");
-                    $worksheet->setCellValue($columns[31] . $i, $v->nivel_ocupacion_backoffice." %");
+                    $worksheet->setCellValue($columns[30] . $i, $v->nivel_ocupacion . " %");
+                    $worksheet->setCellValue($columns[31] . $i, $v->nivel_ocupacion_backoffice . " %");
                     $i++;
                 }
             } else {
                 //Second
-                foreach ($rpta["data"] as $k => $v) {
+                foreach ($data as $k => $v) {
                     foreach ($v as $kk => $vv) {
                         foreach ($vv as $kkk => $vvv) {
                             $vvv = (object)$vvv;
@@ -207,8 +214,8 @@ class ReportController extends Controller
                             $worksheet->setCellValue($columns[29] . $i, $vvv->diff_final / 86400);
                             $worksheet->setCellValue($columns[30] . $i, $vvv->total / 86400);
                             $objPHPExcel->getActiveSheet(1)->getStyle('C' . $i . ':AE' . $i)->getNumberFormat()->setFormatCode("HH:mm:ss");
-                            $worksheet->setCellValue($columns[31] . $i, $vvv->nivel_ocupacion." %");
-                            $worksheet->setCellValue($columns[32] . $i, $vvv->nivel_ocupacion_backoffice." %");
+                            $worksheet->setCellValue($columns[31] . $i, $vvv->nivel_ocupacion . " %");
+                            $worksheet->setCellValue($columns[32] . $i, $vvv->nivel_ocupacion_backoffice . " %");
                             $i++;
                         }
                     }
@@ -219,6 +226,5 @@ class ReportController extends Controller
         } catch (\PHPExcel_Exception $e) {
             echo $e->getMessage();
         }
-
     }
 }

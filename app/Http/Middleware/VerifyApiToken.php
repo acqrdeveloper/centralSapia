@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class VerifyApiToken
 {
@@ -17,7 +18,7 @@ class VerifyApiToken
     {
         $response = null;
         if ($request->hasHeader('X-Api-Token')) {
-            if ($request->header('X-Api-Token') == auth()->user()['api_token']) {
+            if ($request->header('X-Api-Token') != '') {
                 $response = $next($request);
             } else {
                 $response = response()->json(["status" => false, "data" => "Error, procedimiento no autorizado"], 401);;

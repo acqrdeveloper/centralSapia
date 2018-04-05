@@ -56,15 +56,31 @@ class LoginController extends Controller
         if ($this->guard()->attempt($credentials, $rememberme)) {
             if (auth()->once($credentials)) {
                 if ($this->attemptLogin($request)) {
-                    return $this->sendLoginResponse($request);
+//                    return $this->sendLoginResponse($request);
+                    $request->session()->regenerate();
+
+                    $this->clearLoginAttempts($request);
+
+                    return $this->authenticated($request, $this->guard()->user()) ?: redirect()->intended($this->redirectPath());
                 }
             }
         }
         return $this->sendFailedLoginResponse($request);
+
     }
 
-    public function fnDoLogout(Request $request)
+
+//    public function fnDoLogout(Request $request)
+//    {
+//        var_dump($request);
+//        exit();
+////        $this->guard()->logout();
+////        $request->session()->invalidate();
+//    }
+
+    public function logout(Request $request)
     {
+        User::where('email', auth()->user()->email)->update(['api_token' => null]);
         $this->guard()->logout();
         $request->session()->invalidate();
         return redirect()->to('/login');

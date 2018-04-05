@@ -14,9 +14,8 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['middleware' => ['verify.apitoken:api']], function () {
-
-    Route::get("/get-report", "ReportController@doReport");
+    // Apis
+    Route::get("/get-report", "ReportController@selectReport");
     Route::get("/get-users", "ReportController@getUsers");
-    Route::get("/select-report", "ReportController@selectReport");
 
 });

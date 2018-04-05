@@ -11,13 +11,15 @@
 |
 */
 
-Route::group(['middleware' => ['guest']], function () {
+Route::group(['middleware' => ['guest','web']], function () {
     // Auth
     Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
     Route::post('login', 'Auth\LoginController@fnDoLogin');
+
     // Registration Routes...
     Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
     Route::post('register', 'Auth\RegisterController@register');
+
     // Password Reset Routes...
     Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
     Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
@@ -28,10 +30,12 @@ Route::group(['middleware' => ['guest']], function () {
 Route::group(['middleware' => ['auth', 'web']], function () {
     // Views
     Route::get('/', 'Controller@viewVue');
-    Route::get("/report", "Controller@viewVue");
-    Route::get("/user-profile", "Controller@viewVue");
+    Route::get("report", "Controller@viewVue");
+    Route::get("user-profile", "Controller@viewVue");
 
-    Route::get("/export", "ReportController@export");
+    // Files
+    Route::get("export", "ReportController@export");
+
     // Auth
     Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 });

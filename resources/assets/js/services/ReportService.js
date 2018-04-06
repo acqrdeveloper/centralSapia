@@ -5,7 +5,8 @@ import * as Vuex from 'vuex'
 Vue.use(Vuex)
 
 Axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-Axios.defaults.headers.common['X-Api-Token'] = JSON.parse(window.localStorage.getItem('data_auth')).api_token
+Axios.defaults.headers.common['X-Api-Token'] = JSON.parse(
+  window.localStorage.getItem('data_auth')).api_token
 
 const env = {
   API: 'http://web.central.sapia.pe/api',
@@ -17,6 +18,7 @@ const REPORT_SERVICE = new Vuex.Store({
       Axios.get(env.API + '/get-report', {params: self.params}).then((r) => {
         if (r.status === 200) {
           self.loading = false
+          self.disabledFilter = false
           self.dataReport = r.data
         }
       }).catch((e) => {

@@ -10,18 +10,71 @@
                 </div>
                 <hr>
                 <div class="form-inline">
-                    <date-picker v-model="selectedFecha"
-                                 type="date"
-                                 format="YYYY-MM-DD"
-                                 lang="es"
-                                 placeholder="Fecha"
-                                 @input="change()"/>
-                    <date-picker v-model="selectedFechaFin"
-                                 type="date"
-                                 format="YYYY-MM-DD"
-                                 lang="es"
-                                 placeholder="Fecha"
-                                 @input="change()"/>
+
+
+                    <div class="container">
+                        <div class='col-md-5'>
+                            <div class="form-group">
+                                <div class="input-group date" id="datetimepicker7" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker7"/>
+                                    <div class="input-group-append" data-target="#datetimepicker7" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='col-md-5'>
+                            <div class="form-group">
+                                <div class="input-group date" id="datetimepicker8" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker8"/>
+                                    <div class="input-group-append" data-target="#datetimepicker8" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+                    <!--<div class="container">-->
+                        <!--<div class='col-md-5'>-->
+                            <!--<div class="form-group">-->
+                                <!--<div class='input-group date' id='datetimepicker6'>-->
+                                    <!--<input type='text' class="form-control" />-->
+                                    <!--<span class="input-group-addon">-->
+                                <!--<span class="fa fa-calendar"></span>-->
+                                <!--</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class='col-md-5'>-->
+                            <!--<div class="form-group">-->
+                                <!--<div class='input-group date' id='datetimepicker7'>-->
+                                    <!--<input type='text' class="form-control" />-->
+                                    <!--<span class="input-group-addon">-->
+                    <!--<span class="fa fa-calendar"></span>-->
+                <!--</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<date-picker v-model="selectedFecha"-->
+                    <!--type="date"-->
+                    <!--format="YYYY-MM-DD"-->
+                    <!--lang="es"-->
+                    <!--placeholder="Fecha"-->
+                    <!--:disabled="disabledFilter"-->
+                    <!--@input="change()"/>-->
+                    <!--<date-picker v-model="selectedFechaFin"-->
+                    <!--type="date"-->
+                    <!--format="YYYY-MM-DD"-->
+                    <!--lang="es"-->
+                    <!--placeholder="Fecha"-->
+                    <!--:disabled="disabledFilter"-->
+                    <!--@input="change()"/>-->
                     <multiselect v-model="selectedUser"
                                  selectedLabel="Seleccionado"
                                  deselectLabel="Remover"
@@ -31,9 +84,11 @@
                                  label="value"
                                  track-by="id"
                                  class="w-50"
+                                 :disabled="disabledFilter"
                                  @input="change()"/>
                     <label>
-                        <select v-model="params.prol" class="form-control" @change="change()">
+                        <select v-model="params.prol" :disabled="disabledFilter" class="form-control"
+                                @change="change()">
                             <option value="user" selected>User</option>
                             <option value="backoffice" selected>BackOffice</option>
                         </select>
@@ -233,6 +288,7 @@
   import DatePicker from 'vue2-datepicker'
   import Multiselect from 'vue-multiselect'
   import moment from 'moment'
+  import $ from 'jquery'
 
   export default {
     name: 'report',
@@ -253,8 +309,9 @@
       model_date_2: '',
       selectedFilter: '0',
       selectedUser: null,
-      selectedFecha: moment().add(1,'days').format('YYYY-MM-DD'),
-      selectedFechaFin: moment().add( 1,'days').format('YYYY-MM-DD'),
+      selectedFecha: moment().add(1, 'days').format('YYYY-MM-DD'),
+      selectedFechaFin: moment().add(1, 'days').format('YYYY-MM-DD'),
+      disabledFilter: false,
     }),
     created () {
       this.getUsers()
@@ -277,12 +334,14 @@
             if (this.selectedFecha !== '' && this.selectedUser !== '' && this.params.prol !== '') {
               this.params.puser_id = this.selectedUser.id
               this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+              this.disabledFilter = true
               this.getReports()
             }
           } else {
             if (this.selectedFecha !== '') {
               this.params.puser_id = 0
               this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+              this.disabledFilter = true
               this.getReports()
             }
           }
@@ -296,12 +355,14 @@
       exportFile (ext, puser_id) {
         this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
         if (puser_id !== undefined) {
-          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + puser_id + '&prol=' + this.params.prol + '&pusername=' + this.selectedUser.value)
+          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + puser_id +
+            '&prol=' + this.params.prol + '&pusername=' + this.selectedUser.value)
         } else {
-          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + this.params.puser_id + '&prol=' + this.params.prol + '&pusername=' + this.selectedUser.value)
+          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' +
+            this.params.puser_id + '&prol=' + this.params.prol + '&pusername=' + this.selectedUser.value)
         }
-      }
-    }
+      },
+    },
   }
 </script>
 

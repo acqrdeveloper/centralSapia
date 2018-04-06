@@ -10,57 +10,9 @@
                 </div>
                 <hr>
                 <div class="form-inline">
+                    <label><input @input="change()" type="datetime-local" v-model="selectedFecha" :disabled="disabledFilter" class="form-control"/></label>
+                    <label><input @input="change()" type="datetime-local" v-model="selectedFechaFin" :disabled="disabledFilter" class="form-control"/></label>
 
-
-                    <div class="container">
-                        <div class='col-md-5'>
-                            <div class="form-group">
-                                <div class="input-group date" id="datetimepicker7" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker7"/>
-                                    <div class="input-group-append" data-target="#datetimepicker7" data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='col-md-5'>
-                            <div class="form-group">
-                                <div class="input-group date" id="datetimepicker8" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker8"/>
-                                    <div class="input-group-append" data-target="#datetimepicker8" data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-
-                    <!--<div class="container">-->
-                        <!--<div class='col-md-5'>-->
-                            <!--<div class="form-group">-->
-                                <!--<div class='input-group date' id='datetimepicker6'>-->
-                                    <!--<input type='text' class="form-control" />-->
-                                    <!--<span class="input-group-addon">-->
-                                <!--<span class="fa fa-calendar"></span>-->
-                                <!--</span>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class='col-md-5'>-->
-                            <!--<div class="form-group">-->
-                                <!--<div class='input-group date' id='datetimepicker7'>-->
-                                    <!--<input type='text' class="form-control" />-->
-                                    <!--<span class="input-group-addon">-->
-                    <!--<span class="fa fa-calendar"></span>-->
-                <!--</span>-->
-                                <!--</div>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                    <!--</div>-->
                     <!--<date-picker v-model="selectedFecha"-->
                     <!--type="date"-->
                     <!--format="YYYY-MM-DD"-->
@@ -94,13 +46,15 @@
                         </select>
                     </label>
                     <div class="btn-group dropdown btn-group-xs" role="group" aria-label="Reserve Options">
-                        <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' " type="button"
+                        <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' || disabledFilter"
+                                type="button"
                                 class="btn btn-success" title="Exportar por defecto">
                             <i class="fa fa-file-excel-o fa-fw"></i>
                             <span>Excel</span>
                         </button>
                         <div class="btn-group open" role="group">
-                            <button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"
+                            <button :disabled="disabledFilter" type="button"
+                                    class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown"
                                     aria-expanded="true">
                                 <span class="caret"></span>
                             </button>
@@ -118,7 +72,8 @@
                             </ul>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" title="actualizar lista!" @click="refresh()">
+                    <button :disabled="disabledFilter" class="btn btn-secondary" title="actualizar lista!"
+                            @click="refresh()">
                         <i class="fa fa-fw fa-refresh"></i>
                     </button>
                 </div>
@@ -309,11 +264,12 @@
       model_date_2: '',
       selectedFilter: '0',
       selectedUser: null,
-      selectedFecha: moment().add(1, 'days').format('YYYY-MM-DD'),
-      selectedFechaFin: moment().add(1, 'days').format('YYYY-MM-DD'),
+      selectedFecha: moment().add(1, 'days').format('YYYY-MM-DDThh:mm'),
+      selectedFechaFin: null,
       disabledFilter: false,
     }),
     created () {
+      console.log(this.selectedFechaFin)
       this.getUsers()
     },
     methods: {

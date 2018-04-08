@@ -1,32 +1,68 @@
 <template>
     <div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Configuración</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <tr class="bg-light">
+                                <th>Limpiar Filtros Seleccionados</th>
+                                <th class="text-right">
+                                    <button @click.prevent="cleanCheckeds" class="btn btn-secondary">Limpiar</button>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td><i v-show="checkedFilterTime" class="fa fa-check text-success fa-fw"></i>Habilitar Filtrar con Tiempo</td>
+                                <td class="text-right">
+                                    <div class="m-auto">
+                                        <div class="form-check">
+                                            <input v-model="checkedFilterTime" type="checkbox" class="form-check-input">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-header">
                 <div class="row">
                     <div class="col-6 m-auto">
                         <span class="card-title">Reporte por Hora</span>
                     </div>
-                    <div class="col-6 m-auto"></div>
+                    <div class="col-6 m-auto text-right">
+                        <!-- Button trigger modal -->
+                        <button :disabled="disabledFilter" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
+                            <i class="fa fa-cogs"></i>
+                            <span>Opciones</span>
+                        </button>
+                    </div>
                 </div>
                 <hr>
                 <div class="form-inline">
-                    <label><input @input="change()" type="datetime-local" v-model="selectedFecha" :disabled="disabledFilter" class="form-control"/></label>
-                    <label><input @input="change()" type="datetime-local" v-model="selectedFechaFin" :disabled="disabledFilter" class="form-control"/></label>
-
-                    <!--<date-picker v-model="selectedFecha"-->
-                    <!--type="date"-->
-                    <!--format="YYYY-MM-DD"-->
-                    <!--lang="es"-->
-                    <!--placeholder="Fecha"-->
-                    <!--:disabled="disabledFilter"-->
-                    <!--@input="change()"/>-->
-                    <!--<date-picker v-model="selectedFechaFin"-->
-                    <!--type="date"-->
-                    <!--format="YYYY-MM-DD"-->
-                    <!--lang="es"-->
-                    <!--placeholder="Fecha"-->
-                    <!--:disabled="disabledFilter"-->
-                    <!--@input="change()"/>-->
+                    <date-picker v-model="selectedFecha"
+                                 range
+                                 :type="checkedFilterTime ? 'datetime' : 'date'"
+                                 :format="checkedFilterTime ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD'"
+                                 :time-picker-options="{start: '00:00',step: '00:30',end: '23:30'}"
+                                 lang="es"
+                                 placeholder="Fecha"
+                                 :disabled="disabledFilter"
+                                 class="w-50"
+                                 confirm
+                                 @input="change()"/>
                     <multiselect v-model="selectedUser"
                                  selectedLabel="Seleccionado"
                                  deselectLabel="Remover"
@@ -35,18 +71,18 @@
                                  :options="dataUsers"
                                  label="value"
                                  track-by="id"
-                                 class="w-50"
+                                 style="width: 300px !important;"
                                  :disabled="disabledFilter"
                                  @input="change()"/>
                     <label>
-                        <select v-model="params.prol" :disabled="disabledFilter" class="form-control"
+                        <select v-model="params.rol" :disabled="disabledFilter" class="form-control"
                                 @change="change()">
                             <option value="user" selected>User</option>
                             <option value="backoffice" selected>BackOffice</option>
                         </select>
                     </label>
                     <div class="btn-group dropdown btn-group-xs" role="group" aria-label="Reserve Options">
-                        <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' || disabledFilter"
+                        <button @click="exportFile('xlsx')" :disabled="params.user_id == '' || disabledFilter"
                                 type="button"
                                 class="btn btn-success" title="Exportar por defecto">
                             <i class="fa fa-file-excel-o fa-fw"></i>
@@ -60,7 +96,7 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
                                 <li title="Exportar">
-                                    <button @click="exportFile('xlsx')" :disabled="params.puser_id == '' "
+                                    <button @click="exportFile('xlsx')" :disabled="params.user_id == '' "
                                             class="dropdown-item text-muted"><i class="fa fa-file-excel-o fa-fw"></i>
                                         <small>Por Usuario</small>
                                     </button>
@@ -253,9 +289,9 @@
       loading: false,
       params: {
         tipo: 1800,
-        pfecha: '',
-        puser_id: '',
-        prol: 'user',
+        fecha: '',
+        user_id: '',
+        rol: 'user',
       },
       dataReport: [],
       dataUsers: [],
@@ -264,15 +300,18 @@
       model_date_2: '',
       selectedFilter: '0',
       selectedUser: null,
-      selectedFecha: moment().add(1, 'days').format('YYYY-MM-DDThh:mm'),
-      selectedFechaFin: null,
+      selectedFecha: moment().format('YYYY-MM-DD HH:mm'),
       disabledFilter: false,
+      checkedFilterTime: false,
     }),
     created () {
-      console.log(this.selectedFechaFin)
       this.getUsers()
     },
     methods: {
+      cleanCheckeds(){
+        this.checkedFilterRange = false;
+        this.checkedFilterTime = false;
+      },
       getUsers () {
         Service.dispatch('getUsers', {self: this})
       },
@@ -287,35 +326,33 @@
         if (this.selectedUser != null) {
           this.dataReport = []
           if (this.selectedFilter === '0') {
-            if (this.selectedFecha !== '' && this.selectedUser !== '' && this.params.prol !== '') {
-              this.params.puser_id = this.selectedUser.id
-              this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+            if (this.selectedFecha !== '' && this.selectedUser !== '' && this.params.rol !== '') {
+              this.params.user_id = this.selectedUser.id
+              this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD')+'/'+moment(this.selectedFecha[1]).format('YYYY-MM-DD')
               this.disabledFilter = true
               this.getReports()
             }
           } else {
             if (this.selectedFecha !== '') {
-              this.params.puser_id = 0
-              this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+              this.params.user_id = 0
+              this.params.fecha = moment(this.selectedFecha).format('YYYY-MM-DD')
               this.disabledFilter = true
               this.getReports()
             }
           }
         } else {
           this.loading = false
-          this.params.puser_id = ''
+          this.params.user_id = ''
           this.selectedUser = null
           this.dataReport = []
         }
       },
       exportFile (ext, puser_id) {
-        this.params.pfecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+        this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD')+'/'+moment(this.selectedFecha[1]).format('YYYY-MM-DD')
         if (puser_id !== undefined) {
-          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' + puser_id +
-            '&prol=' + this.params.prol + '&pusername=' + this.selectedUser.value)
+          return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
         } else {
-          return window.open('/export?ext=' + ext + '&pfecha=' + this.params.pfecha + '&puser_id=' +
-            this.params.puser_id + '&prol=' + this.params.prol + '&pusername=' + this.selectedUser.value)
+          return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + this.params.user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
         }
       },
     },
@@ -323,5 +360,4 @@
 </script>
 
 <style scoped>
-
 </style>

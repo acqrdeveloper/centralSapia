@@ -19,6 +19,9 @@
             -webkit-box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.25);
             box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.25);
         }
+        .mx-datepicker-popup.range{
+            width: 100% !important;
+        }
     </style>
 </head>
 <body class="face-app fixed-nav sticky-footer bg-light sidenav-toggled" id="page-top">

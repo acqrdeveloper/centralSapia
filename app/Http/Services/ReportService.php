@@ -115,17 +115,21 @@ class ReportService
             $temp_diff_fin = 0;
             $set = false;
             $last_data = null;
-            //Params procedure
-            $pfecha = $request->pfecha;
-            $puser_id = $option["user"] != null ? $option["user"]->id : $request->puser_id;
-            $prol = $request->prol;
-            //Validar posicion para el rango de horario
 
+            //Params procedure
+            $temp_fecha = explode('/',$request->fecha);
+            $param_fecha_ini = $temp_fecha[0];
+            $param_fecha_fin = $temp_fecha[1];
+            $param_user_id = $option["user"] != null ? $option["user"]->id : $request->user_id;
+            $param_rol = $request->rol;
+
+            //Validar posicion para el rango de horario
             if (isset($hours[$k + 1])) {
-                $query = DB::select("call SP_REPORT_1800(?,?,?,?,?) ", [$pfecha, $hours[$k], $hours[$k + 1], $puser_id, $prol]);
+                $query = DB::select("call SP_REPORT_1800(?,?,?,?,?,?) ", [$param_fecha_ini, $param_fecha_fin, $hours[$k], $hours[$k + 1], $param_user_id, $param_rol]);
             } else {
-                $query = DB::select("call SP_REPORT_1800(?,?,?,?,?) ", [$pfecha, $hours[$k], $hours[0], $puser_id, $prol]);
+                $query = DB::select("call SP_REPORT_1800(?,?,?,?,?,?) ", [$param_fecha_ini, $param_fecha_fin, $hours[$k], $hours[0], $param_user_id, $param_rol]);
             }
+
             //Si hay registros
             if (count($query)) {
                 if (isset($hours[$k + 1])) {

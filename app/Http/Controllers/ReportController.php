@@ -34,7 +34,7 @@ class ReportController extends Controller
     {
         $data = null;
         try {
-            if ($request->puser_id > 0) {
+            if ($request->user_id > 0) {
                 $data = $this->reportByUser($request);
             } else {
                 $data = $this->reportByUserAll($request);
@@ -53,7 +53,6 @@ class ReportController extends Controller
 
     function reportByUserAll($request)
     {
-//        ini_set('max_execution_time', 300);
         $users = DB::select("select id,primer_nombre,segundo_nombre,apellido_paterno,apellido_materno from users");
         $data = [];
         foreach ($users as $key => $user) {
@@ -68,49 +67,19 @@ class ReportController extends Controller
         try {
             //Request:
             $filename = "byUserAll";
-            if ($request->puser_id > 0) {
-                $sheetname = $request->pusername;
+            if ($request->user_id > 0) {
+                $sheetname = $request->username;
                 $filename = "byUser";
                 $data = $this->reportByUser($request);
             } else {
                 $sheetname = $filename;
                 $data = $this->reportByUserAll($request);
             }
-            //Usando Maatwebsite Excel Laravel
-            /*
-                    return Excel::create($filename, function ($writer) use ($filename,$rpta) {
-                        $writer->sheet($filename, function ($sheet)use($rpta) {
-                            $sheet->setOrientation('portrait');
-                            $headers = [
-                                "A1" => "ID USUARIO",
-                                "B1" => "NOMBRE COMPLETO",
-                                "C1" => "NICK",
-                            ];
-                            //Get query
-            //                $rpta=
-            //                $newdata = DB::table("users")->select(["id", DB::raw("CONCAT(users.apellido_paterno,' ',users.apellido_materno,', ',users.primer_nombre) AS 'nameComplete'"), "username"])->get();
-                            //Process query fomated
-                            $data = collect($rpta["data"])->map(function ($x) {
-                                return (array)$x;
-                            })->toArray();
-                            dd($data);
-                            //Generate rows
-                            $sheet->fromArray($rpta["data"]);
-                            //Generate columns
-                            foreach ($headers as $k => $v) {
-                                $sheet->cell($k, function ($cell) use ($v) {
-                                    //Manipulate the cell
-                                    $cell->setValue($v);
-                                });
-                            }
-                        });
-                    })->export(request("ext"));
-            */
             //Usando PHPExcel library
             $objPHPExcel = new PHPExcel();
             $objPHPExcel->getActiveSheet(1)->setTitle($sheetname);
 
-            if ($request->puser_id > 0) {
+            if ($request->user_id > 0) {
                 $objPHPExcel->getActiveSheet(1)->getStyle('A1:AF1')->applyFromArray($this->colorFillNoneSolid);
                 $objPHPExcel->getActiveSheet(1)->getStyle('B1')->applyFromArray($this->colorFillYellowSolid);
                 $objPHPExcel->getActiveSheet(1)->getStyle('AC1')->applyFromArray($this->colorFillRedSolid);
@@ -137,7 +106,7 @@ class ReportController extends Controller
             $worksheet = $this->fnCreateExcel($objPHPExcel, $headers, $columns);
             $i = 2;
 
-            if ($request->puser_id > 0) {
+            if ($request->user_id > 0) {
                 //First
                 foreach ($data as $k => $v) {
                     $v = (object)$v;

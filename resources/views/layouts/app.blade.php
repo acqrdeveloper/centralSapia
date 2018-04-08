@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Sapia | Login</title>
+    <title>Login | Sapia</title>
     <!-- Styles -->
     <link rel="stylesheet" href="{{asset("dist/css/main.css")}}">
     <style>

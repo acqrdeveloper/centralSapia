@@ -6,7 +6,7 @@
     <div class="card card-login mx-auto mt-5">
         <div class="card-header">Sign In</div>
         <div class="card-body">
-            <form method="post" action="{{ url('/login') }}">
+            <form method="post" action="{{ url('/login') }}" autocomplete="off">
                 {{ csrf_field() }}
                 <div class="form-group">
                     <label>Proyecto</label>
@@ -25,9 +25,9 @@
                 <div class="form-group">
                     <label>Email address</label>
                     <div class="input-group mb-1">
-                        <input name="email" class="form-control" type="text" placeholder="Enter username or email" title="Registrar" value="{{old("email")}}" required>
+                        <input name="email" class="form-control" type="text" placeholder="email or username" title="Registrar" value="{{old("email")}}" required>
                         <div class="input-group-append">
-                            <span class="input-group-text">@sapia.com.pe</span>
+                            <span class="input-group-text bg-white">@sapia.com.pe</span>
                         </div>
                     </div>
                     @if ($errors->has('email'))
@@ -36,7 +36,7 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input name="password" class="form-control mb-1" type="password" placeholder="Password" required>
+                    <input name="password" class="form-control mb-1" type="password" placeholder="password" required>
                     @if ($errors->has('password'))
                         <span class="help-block"><small><strong>{{ $errors->first('password') }}</strong></small></span>
                     @endif

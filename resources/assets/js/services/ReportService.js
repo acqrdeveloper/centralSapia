@@ -1,21 +1,18 @@
 import Vue from 'vue'
 import Axios from 'axios'
 import * as Vuex from 'vuex'
+import Env from '../env'
+import Util from '../util'
 
 Vue.use(Vuex)
 
 Axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-Axios.defaults.headers.common['X-Api-Token'] = JSON.parse(
-  window.localStorage.getItem('data_auth')).api_token
-
-const env = {
-  API: 'http://web.central.sapia.pe/api',
-}
+Axios.defaults.headers.common['X-Api-Token'] = Util.getStorage('data_auth').api_token
 
 const REPORT_SERVICE = new Vuex.Store({
   actions: {
     getReports ({commit}, {self}) {
-      Axios.get(env.API + '/get-report', {params: self.params}).then((r) => {
+      Axios.get(Env.API + '/get-report', {params: self.params}).then((r) => {
         if (r.status === 200) {
           self.loading = false
           self.disabledFilter = false
@@ -33,7 +30,7 @@ const REPORT_SERVICE = new Vuex.Store({
       })
     },
     getUsers ({commit}, {self}) {
-      Axios.get(env.API + '/get-users', {params: self.params}).then((r) => {
+      Axios.get(Env.API + '/get-users', {params: self.params}).then((r) => {
         if (r.status === 200) {
           self.loading = false
           self.dataUsers = r.data
@@ -51,4 +48,5 @@ const REPORT_SERVICE = new Vuex.Store({
     },
   },
 })
+
 export default REPORT_SERVICE

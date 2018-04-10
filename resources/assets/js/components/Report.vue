@@ -309,7 +309,6 @@
     },
     methods: {
       cleanCheckeds(){
-        this.checkedFilterRange = false;
         this.checkedFilterTime = false;
       },
       getUsers () {

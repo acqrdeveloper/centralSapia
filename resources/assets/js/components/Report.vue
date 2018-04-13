@@ -348,7 +348,11 @@
       },
       exportFile (ext, user_id) {
         this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD') + '/' + moment(this.selectedFecha[1]).format('YYYY-MM-DD')
-        return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + (user_id !== undefined) ? user_id : this.params.user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
+        if(user_id != undefined){
+            return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + user_id + '&rol=' + this.params.rol + '&username=' + 'Todos')
+        }else{
+            return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + this.params.user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
+        }
       },
     },
   }

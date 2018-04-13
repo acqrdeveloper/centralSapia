@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
              aria-hidden="true">
@@ -21,7 +20,9 @@
                                 </th>
                             </tr>
                             <tr>
-                                <td><i v-show="checkedFilterTime" class="fa fa-check text-success fa-fw"></i>Habilitar Filtrar con Tiempo</td>
+                                <td><i v-show="checkedFilterTime" class="fa fa-check text-success fa-fw"></i>Habilitar
+                                    Filtrar con Tiempo
+                                </td>
                                 <td class="text-right">
                                     <div class="m-auto">
                                         <div class="form-check">
@@ -35,7 +36,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card">
             <div class="card-header">
                 <div class="row">
@@ -44,7 +44,8 @@
                     </div>
                     <div class="col-6 m-auto text-right">
                         <!-- Button trigger modal -->
-                        <button :disabled="disabledFilter" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
+                        <button :disabled="disabledFilter" type="button" class="btn btn-secondary" data-toggle="modal"
+                                data-target="#exampleModal">
                             <i class="fa fa-cogs"></i>
                             <span>Opciones</span>
                         </button>
@@ -275,11 +276,10 @@
 </template>
 
 <script>
-  import Service from '../services/ReportService'
-  import DatePicker from 'vue2-datepicker'
+  import Service     from '../services/ReportService'
+  import DatePicker  from 'vue2-datepicker'
   import Multiselect from 'vue-multiselect'
-  import moment from 'moment'
-  import $ from 'jquery'
+  import moment      from 'moment'
 
   export default {
     name: 'report',
@@ -308,8 +308,8 @@
       this.getUsers()
     },
     methods: {
-      cleanCheckeds(){
-        this.checkedFilterTime = false;
+      cleanCheckeds () {
+        this.checkedFilterTime = false
       },
       getUsers () {
         Service.dispatch('getUsers', {self: this})
@@ -327,7 +327,7 @@
           if (this.selectedFilter === '0') {
             if (this.selectedFecha !== '' && this.selectedUser !== '' && this.params.rol !== '') {
               this.params.user_id = this.selectedUser.id
-              this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD')+'/'+moment(this.selectedFecha[1]).format('YYYY-MM-DD')
+              this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD') + '/' + moment(this.selectedFecha[1]).format('YYYY-MM-DD')
               this.disabledFilter = true
               this.getReports()
             }
@@ -346,13 +346,9 @@
           this.dataReport = []
         }
       },
-      exportFile (ext, puser_id) {
-        this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD')+'/'+moment(this.selectedFecha[1]).format('YYYY-MM-DD')
-        if (puser_id !== undefined) {
-          return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
-        } else {
-          return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + this.params.user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
-        }
+      exportFile (ext, user_id) {
+        this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD') + '/' + moment(this.selectedFecha[1]).format('YYYY-MM-DD')
+        return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + (user_id !== undefined) ? user_id : this.params.user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
       },
     },
   }

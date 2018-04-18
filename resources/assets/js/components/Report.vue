@@ -21,7 +21,9 @@
                                 </th>
                             </tr>
                             <tr>
-                                <td><i v-show="checkedFilterTime" class="fa fa-check text-success fa-fw"></i>Habilitar Filtrar con Tiempo</td>
+                                <td><i v-show="checkedFilterTime" class="fa fa-check text-success fa-fw"></i>Habilitar
+                                    Filtrar con Tiempo
+                                </td>
                                 <td class="text-right">
                                     <div class="m-auto">
                                         <div class="form-check">
@@ -40,11 +42,12 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-6 m-auto">
-                        <span class="card-title">Reporte por Hora</span>
+                        <span class="card-title">Reporte por Tiempo</span>
                     </div>
                     <div class="col-6 m-auto text-right">
                         <!-- Button trigger modal -->
-                        <button :disabled="disabledFilter" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
+                        <button :disabled="disabledFilter" type="button" class="btn btn-secondary" data-toggle="modal"
+                                data-target="#exampleModal">
                             <i class="fa fa-cogs"></i>
                             <span>Opciones</span>
                         </button>
@@ -79,6 +82,12 @@
                                 @change="change()">
                             <option value="user" selected>User</option>
                             <option value="backoffice" selected>BackOffice</option>
+                        </select>
+                    </label>
+                    <label>
+                        <select v-model="params.time" :disabled="disabledFilter" class="form-control" @change="change()">
+                            <option value="60" selected>Por Hora</option>
+                            <option value="30" selected>Por Media Hora</option>
                         </select>
                     </label>
                     <div class="btn-group dropdown btn-group-xs" role="group" aria-label="Reserve Options">
@@ -275,11 +284,11 @@
 </template>
 
 <script>
-  import Service from '../services/ReportService'
-  import DatePicker from 'vue2-datepicker'
+  import Service     from '../services/ReportService'
+  import DatePicker  from 'vue2-datepicker'
   import Multiselect from 'vue-multiselect'
-  import moment from 'moment'
-  import $ from 'jquery'
+  import moment      from 'moment'
+  import $           from 'jquery'
 
   export default {
     name: 'report',
@@ -288,7 +297,7 @@
       moment: moment,
       loading: false,
       params: {
-        tipo: 1800,
+        time:60,
         fecha: '',
         user_id: '',
         rol: 'user',
@@ -304,30 +313,31 @@
       disabledFilter: false,
       checkedFilterTime: false,
     }),
-    created () {
+    created() {
       this.getUsers()
     },
     methods: {
-      cleanCheckeds(){
-        this.checkedFilterTime = false;
+      cleanCheckeds() {
+        this.checkedFilterTime = false
       },
-      getUsers () {
+      getUsers() {
         Service.dispatch('getUsers', {self: this})
       },
-      getReports () {
+      getReports() {
         Service.dispatch('getReports', {self: this})
       },
-      refresh () {
+      refresh() {
         this.change()
       },
-      change () {
+      change() {
         this.loading = true
         if (this.selectedUser != null) {
           this.dataReport = []
           if (this.selectedFilter === '0') {
             if (this.selectedFecha !== '' && this.selectedUser !== '' && this.params.rol !== '') {
               this.params.user_id = this.selectedUser.id
-              this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD')+'/'+moment(this.selectedFecha[1]).format('YYYY-MM-DD')
+              this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD') + '/' +
+                moment(this.selectedFecha[1]).format('YYYY-MM-DD')
               this.disabledFilter = true
               this.getReports()
             }
@@ -346,12 +356,15 @@
           this.dataReport = []
         }
       },
-      exportFile (ext, puser_id) {
-        this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD')+'/'+moment(this.selectedFecha[1]).format('YYYY-MM-DD')
+      exportFile(ext, puser_id) {
+        this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD') + '/' +
+          moment(this.selectedFecha[1]).format('YYYY-MM-DD')
         if (puser_id !== undefined) {
-          return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
+          return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + user_id + '&rol=' +
+            this.params.rol + '&username=' + this.selectedUser.value)
         } else {
-          return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + this.params.user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
+          return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + this.params.user_id +
+            '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
         }
       },
     },

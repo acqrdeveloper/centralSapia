@@ -52,7 +52,7 @@ class LoginController extends Controller
         // Process login
         $credentials = ['email' => $request->email, 'password' => $request->password];
         $rememberme = $request->has('rememberme') ? true : false;
-        User::where('email', $request->email)->update(['api_token' => Hash::make(100)]);
+//        User::where('email', $request->email)->update(['api_token' => Hash::make(100)]);
         if ($this->guard()->attempt($credentials, $rememberme)) {
             if (auth()->once($credentials)) {
                 if ($this->attemptLogin($request)) {
@@ -80,7 +80,7 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        User::where('email', auth()->user()->email)->update(['api_token' => null]);
+//        User::where('email', auth()->user()->email)->update(['api_token' => null]);
         $this->guard()->logout();
         $request->session()->invalidate();
         return redirect()->to('/login');

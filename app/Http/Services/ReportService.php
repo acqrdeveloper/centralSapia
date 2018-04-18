@@ -22,56 +22,7 @@ class ReportService
     function reportToJsonService($request = null, $option = null)
     {
         ini_set('max_execution_time', 300);
-        $hours = [
-            "00:00:00",
-            "00:30:00",
-            "01:00:00",
-            "01:30:00",
-            "02:00:00",
-            "02:30:00",
-            "03:00:00",
-            "03:30:00",
-            "04:00:00",
-            "04:30:00",
-            "05:00:00",
-            "05:30:00",
-            "06:00:00",
-            "06:30:00",
-            "07:00:00",
-            "07:30:00",
-            "08:00:00",
-            "08:30:00",
-            "09:00:00",
-            "09:30:00",
-            "10:00:00",
-            "10:30:00",
-            "11:00:00",
-            "11:30:00",
-            "12:00:00",
-            "12:30:00",
-            "13:00:00",
-            "13:30:00",
-            "14:00:00",
-            "14:30:00",
-            "15:00:00",
-            "15:30:00",
-            "16:00:00",
-            "16:30:00",
-            "17:00:00",
-            "17:30:00",
-            "18:00:00",
-            "18:30:00",
-            "19:00:00",
-            "19:30:00",
-            "20:00:00",
-            "20:30:00",
-            "21:00:00",
-            "21:30:00",
-            "22:00:00",
-            "22:30:00",
-            "23:00:00",
-            "23:30:00"
-        ];
+        $hours = $this->generateTimeRange('00:00:00', '23:00:00', (int)$request->time,false);
         $data = [];
         $login = 0;
         $acd = 0;
@@ -117,7 +68,7 @@ class ReportService
             $last_data = null;
 
             //Params procedure
-            $temp_fecha = explode('/',$request->fecha);
+            $temp_fecha = explode('/', $request->fecha);
             $param_fecha_ini = $temp_fecha[0];
             $param_fecha_fin = $temp_fecha[1];
             $param_user_id = $option["user"] != null ? $option["user"]->id : $request->user_id;
@@ -660,6 +611,65 @@ class ReportService
             $second = Carbon::parse($datetime_ini);
             return $first->diffInSeconds($second);// 10 min
         }
+    }
+
+    function getReportByHour($filter)
+    {
+        if ($filter == '1800') { //reporte por 1/2 hora
+            $data = 'return data de 1800';
+        } else if ($filter == '3600') { //reporte por 1 hora
+            $data = 'return data de 3600';
+        } else {
+            $data = 'return filtro invalido';
+        }
+        return $data;
+    }
+
+    function getReportByDate()
+    {
+        $data = [];
+        $dates = $this->generateDateRange('2018-03-01', '2018-03-31');
+        $times = $this->generateTimeRange('00:00:00', '23:30:00', 30,true);
+        if (count($dates)) {
+//            dd($dates);
+            foreach ($dates as $k => $v) {
+                foreach ($times as $kk => $vv) {
+//                    $data[] = ['fecha' => $v, 'tiempo' => $vv];
+                    array_push($data, ['fecha' => $v, 'tiempo' => $vv]);
+                }
+            }
+        }
+        dd($data);
+    }
+
+    function generateDateRange($start_date, $end_date)
+    {
+        $dates = [];
+        for ($date = Carbon::parse($start_date); $date->lte(Carbon::parse($end_date)); $date->addDay()) {
+            $dates[] = $date->format('Y-m-d');
+        }
+        return $dates;
+    }
+
+    function generateTimeRange($start_hour, $end_hour, $minute = 30, $range = true)
+    {
+        $newtimes = [];
+        $times = [];
+        for ($time = Carbon::parse($start_hour); $time->lte(Carbon::parse($end_hour)); $time->addMinute($minute)) {
+            $times[] = $time->format('H:i:s');
+        }
+        if ($range) {
+            foreach ($times as $k => $v) {
+                if (isset($times[$k + 1])) {
+                    $newtimes[$k] = $times[$k] . ' - ' . $times[$k + 1];
+                } else {
+                    $newtimes[$k] = $times[$k] . ' - ' . $times[0];
+                }
+            }
+        }else{
+            $newtimes = $times;
+        }
+        return $newtimes;
     }
 
 }

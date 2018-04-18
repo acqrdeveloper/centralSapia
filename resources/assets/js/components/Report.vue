@@ -78,14 +78,15 @@
                     <label>
                         <select v-model="params.rol" :disabled="disabledFilter" class="form-control"
                                 @change="change()">
-                            <option value="user" selected>User</option>
-                            <option value="backoffice" selected>BackOffice</option>
+                            <option value="user" selected>Usuario</option>
+                            <option value="backoffice" selected>Back-Office</option>
                         </select>
                     </label>
                     <label>
-                        <select v-model="params.time" :disabled="disabledFilter" class="form-control" @change="change()">
-                            <option value="60" selected>Por Hora</option>
-                            <option value="30" selected>Por Media Hora</option>
+                        <select v-model="params.time" :disabled="disabledFilter" class="form-control"
+                                @change="change()">
+                            <option value="60" selected>Por 60 Minutos</option>
+                            <option value="30" selected>Por 30 Minutos</option>
                         </select>
                     </label>
                     <div class="btn-group dropdown btn-group-xs" role="group" aria-label="Reserve Options">
@@ -285,16 +286,16 @@
   import Service     from '../services/ReportService'
   import DatePicker  from 'vue2-datepicker'
   import Multiselect from 'vue-multiselect'
-  import moment      from 'moment'
+  import Moment      from 'moment'
 
   export default {
     name: 'report',
     components: {Multiselect, DatePicker},
     data: () => ({
-      moment: moment,
+      moment: Moment,
       loading: false,
       params: {
-        time:60,
+        time: 60,
         fecha: '',
         user_id: '',
         rol: 'user',
@@ -306,41 +307,41 @@
       model_date_2: '',
       selectedFilter: '0',
       selectedUser: null,
-      selectedFecha: moment().format('YYYY-MM-DD HH:mm'),
+      selectedFecha: Moment().format('YYYY-MM-DD HH:mm'),
       disabledFilter: false,
       checkedFilterTime: false,
     }),
-    created() {
+    created () {
       this.getUsers()
     },
     methods: {
       cleanCheckeds () {
         this.checkedFilterTime = false
       },
-      getUsers() {
+      getUsers () {
         Service.dispatch('getUsers', {self: this})
       },
-      getReports() {
+      getReports () {
         Service.dispatch('getReports', {self: this})
       },
-      refresh() {
+      refresh () {
         this.change()
       },
-      change() {
+      change () {
         this.loading = true
         if (this.selectedUser != null) {
           this.dataReport = []
           if (this.selectedFilter === '0') {
             if (this.selectedFecha !== '' && this.selectedUser !== '' && this.params.rol !== '') {
               this.params.user_id = this.selectedUser.id
-              this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD') + '/' + moment(this.selectedFecha[1]).format('YYYY-MM-DD')
+              this.params.fecha = Moment(this.selectedFecha[0]).format('YYYY-MM-DD') + '/' + Moment(this.selectedFecha[1]).format('YYYY-MM-DD')
               this.disabledFilter = true
               this.getReports()
             }
           } else {
             if (this.selectedFecha !== '') {
               this.params.user_id = 0
-              this.params.fecha = moment(this.selectedFecha).format('YYYY-MM-DD')
+              this.params.fecha = Moment(this.selectedFecha).format('YYYY-MM-DD')
               this.disabledFilter = true
               this.getReports()
             }
@@ -353,11 +354,11 @@
         }
       },
       exportFile (ext, user_id) {
-        this.params.fecha = moment(this.selectedFecha[0]).format('YYYY-MM-DD') + '/' + moment(this.selectedFecha[1]).format('YYYY-MM-DD')
-        if(user_id != undefined){
-            return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + user_id + '&rol=' + this.params.rol + '&username=' + 'Todos')
-        }else{
-            return window.open('/export?ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + this.params.user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
+        this.params.fecha = Moment(this.selectedFecha[0]).format('YYYY-MM-DD') + '/' + Moment(this.selectedFecha[1]).format('YYYY-MM-DD')//2018-04-16/2018-04-16
+        if (user_id != undefined) {
+          return window.open('/export?time=' + this.params.time + '&ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + user_id + '&rol=' + this.params.rol + '&username=' + 'Todos')
+        } else {
+          return window.open('/export?time=' + this.params.time + '&ext=' + ext + '&fecha=' + this.params.fecha + '&user_id=' + this.params.user_id + '&rol=' + this.params.rol + '&username=' + this.selectedUser.value)
         }
       },
     },

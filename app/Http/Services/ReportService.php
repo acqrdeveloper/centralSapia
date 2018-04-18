@@ -22,7 +22,7 @@ class ReportService
     function reportToJsonService($request = null, $option = null)
     {
         ini_set('max_execution_time', 300);
-        $hours = $this->generateTimeRange('00:00:00', '23:00:00', (int)$request->time,false);
+        $hours = $this->generateTimeRange('00:00:00', '23:30:00', (int)$request->time, false);
         $data = [];
         $login = 0;
         $acd = 0;
@@ -100,7 +100,6 @@ class ReportService
                         }
                         if ($vv->user_id == $option["user"]->id) {
                             $current_user_id = $vv->user_id;
-                            $by_user = true;
                         }
                     }
 //##
@@ -627,19 +626,48 @@ class ReportService
 
     function getReportByDate()
     {
+        ini_set('max_execution_time', 300);
         $data = [];
-        $dates = $this->generateDateRange('2018-03-01', '2018-03-31');
-        $times = $this->generateTimeRange('00:00:00', '23:30:00', 30,true);
+        $dates = $this->generateDateRange('2018-04-02', '2018-04-02');
+        $times = $this->generateTimeRange('00:00:00', '23:30:00', 60, false);
+//        $times = $this->generateTimeRange('17:00:00', '18:30:00', 60, false);
         if (count($dates)) {
-//            dd($dates);
-            foreach ($dates as $k => $v) {
-                foreach ($times as $kk => $vv) {
-//                    $data[] = ['fecha' => $v, 'tiempo' => $vv];
-                    array_push($data, ['fecha' => $v, 'tiempo' => $vv]);
+            foreach ($dates as $k => $date) {
+                foreach ($times as $kk => $time) {
+//                    dd($time);
+//                    array_push($data, ['fecha' => $date, 'tiempo' => $time]);
+                    if (isset($times[$kk + 1])) {
+                        $querys = DB::select('CALL SP_GET_REPORT_BY_RANGE_DATE_TIME(?,?,?,?,?)', [$date, $date, $time, $times[$kk + 1], '13']);
+                    } else {
+                        $querys = DB::select('CALL SP_GET_REPORT_BY_RANGE_DATE_TIME(?,?,?,?,?)', [$date, $date, $time, $times[0], '13']);
+                    }
+//                    foreach ($querys as $kkk => $query) {
+                    $data[$date] = [
+                        'tiempo' => (isset($times[$kk + 1])) ? $time . ' - ' . $times[$kk + 1] : $time . ' - ' . $times[0],
+                        'data' => $querys
+                    ];
+//                    }
                 }
             }
         }
-        dd($data);
+//        dd($data);
+        $html = '';
+        $html .= '<table border="1">';
+        $html .= '<tr>';
+        $html .= '<th>Fecha</th>';
+        $html .= '<th>Tiempo</th>';
+        $html .= '<th>Data</th>';
+        $html .= '</tr>';
+        foreach ($data as $k => $item) {
+        $html .= '<tr>';
+            foreach ($data[$k] as $kk => $value) {
+                $html .= '<td>' . $k . '</td>';
+                $html .= '<td>' . $value . '</td>';
+            }
+        $html .= '</tr>';
+        }
+        $html .= '</table>';
+        echo $html;
     }
 
     function generateDateRange($start_date, $end_date)
@@ -666,7 +694,7 @@ class ReportService
                     $newtimes[$k] = $times[$k] . ' - ' . $times[0];
                 }
             }
-        }else{
+        } else {
             $newtimes = $times;
         }
         return $newtimes;

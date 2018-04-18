@@ -15,7 +15,7 @@
             <li>
                 <router-link :to="'report'" class="nav-link">
                     <i class="fa fa-fw fa-area-chart"></i>
-                    <span class="nav-link-text">Por Hora</span>
+                    <span class="nav-link-text">Por Tiempo</span>
                 </router-link>
             </li>
         </ul>

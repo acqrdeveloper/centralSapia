@@ -126,8 +126,8 @@ trait Utility
     {
         $objPHPExcel
             ->getProperties()
-            ->setCreator('aquispe@sapia.com.pe')
-            ->setTitle("Sapia Corporation");
+            ->setCreator('aquisper@sapia.com.pe')
+            ->setTitle("Corporación Sapia");
 
         $objPHPExcel->setActiveSheetIndex(0);
         $worksheet = $objPHPExcel->getActiveSheet();

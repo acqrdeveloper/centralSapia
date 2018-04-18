@@ -196,4 +196,10 @@ class ReportController extends Controller
             echo $e->getMessage();
         }
     }
+
+    function getReportByDate()
+    {
+        $this->service->getReportByDate();
+    }
+
 }

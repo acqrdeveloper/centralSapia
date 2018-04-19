@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ReportRequest;
 use App\Http\Services\ReportService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PHPExcel;
 use Exception;
@@ -197,9 +198,9 @@ class ReportController extends Controller
         }
     }
 
-    function getReportByDate()
+    function getReportByDate(Request $request)
     {
-        $this->service->getReportByDate();
+        $this->service->getReportByDate(60, ["user" => (object)['id'=>13]],$request);
     }
 
 }

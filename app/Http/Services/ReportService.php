@@ -624,47 +624,65 @@ class ReportService
         return $data;
     }
 
-    function getReportByDate()
+    function getReportByDate($min = 60)
     {
         ini_set('max_execution_time', 300);
         $data = [];
-        $dates = $this->generateDateRange('2018-04-02', '2018-04-02');
-        $times = $this->generateTimeRange('00:00:00', '23:30:00', 60, false);
-//        $times = $this->generateTimeRange('17:00:00', '18:30:00', 60, false);
+        $dates = $this->generateDateRange('2018-03-02', '2018-03-02');
+        $times = $this->generateTimeRange('00:00:00', '23:30:00', $min, false);
+
         if (count($dates)) {
             foreach ($dates as $k => $date) {
                 foreach ($times as $kk => $time) {
-//                    dd($time);
-//                    array_push($data, ['fecha' => $date, 'tiempo' => $time]);
                     if (isset($times[$kk + 1])) {
                         $querys = DB::select('CALL SP_GET_REPORT_BY_RANGE_DATE_TIME(?,?,?,?,?)', [$date, $date, $time, $times[$kk + 1], '13']);
                     } else {
                         $querys = DB::select('CALL SP_GET_REPORT_BY_RANGE_DATE_TIME(?,?,?,?,?)', [$date, $date, $time, $times[0], '13']);
                     }
-//                    foreach ($querys as $kkk => $query) {
-                    $data[$date] = [
-                        'tiempo' => (isset($times[$kk + 1])) ? $time . ' - ' . $times[$kk + 1] : $time . ' - ' . $times[0],
-                        'data' => $querys
-                    ];
-//                    }
+                    if (count($querys)) {
+                        if (isset($times[$kk + 1])) {
+                            $data[$date][$time . ' - ' . $times[$kk + 1]]['acd'] = $querys;
+                            $data[$date][$time . ' - ' . $times[$kk + 1]]['inbound'] = $querys;
+                        } else {
+                            $data[$date][$time . ' - ' . $times[0]] = $querys;
+                        }
+                    } else {
+                        if (isset($times[$kk + 1])) {
+                            $data[$date][$time . ' - ' . $times[$kk + 1]]['acd'] =  [(object)['id' => 0]];
+                            $data[$date][$time . ' - ' . $times[$kk + 1]]['inbound'] =  [(object)['id' => 0]];
+                        } else {
+                            $data[$date][$time . ' - ' . $times[0]]['acd'] = $querys;
+                            $data[$date][$time . ' - ' . $times[0]]['inbound'] = $querys;
+                        }
+                    }
                 }
             }
         }
-//        dd($data);
+        dd($data);
+        $suma = 0;
         $html = '';
         $html .= '<table border="1">';
         $html .= '<tr>';
         $html .= '<th>Fecha</th>';
         $html .= '<th>Tiempo</th>';
-        $html .= '<th>Data</th>';
+        $html .= '<th>Acd</th>';
+        $html .= '<th>Inbound</th>';
         $html .= '</tr>';
-        foreach ($data as $k => $item) {
-        $html .= '<tr>';
-            foreach ($data[$k] as $kk => $value) {
+        foreach ($data as $k => $date) {
+            foreach ($data[$k] as $kk => $time) {
+                $html .= '<tr>';
                 $html .= '<td>' . $k . '</td>';
-                $html .= '<td>' . $value . '</td>';
+                $html .= '<td>' . $kk . '</td>';
+                foreach ($time as $kkk => $item) {
+//                    $suma += 1;
+                    foreach ($item as $value) {
+//                        dd($value);
+                        $html .= '<td>' . $value->id . '</td>';
+                    }
+                }
+                $html .= '</tr>';
+//                $suma = 0;
             }
-        $html .= '</tr>';
         }
         $html .= '</table>';
         echo $html;

@@ -1,13 +1,14 @@
-import Vue from 'vue'
-import Axios from 'axios'
+import Vue       from 'vue'
+import Axios     from 'axios'
 import * as Vuex from 'vuex'
-import Env from '../env'
-import Util from '../util'
+import Env       from '../env'
+import Util      from '../util'
 
 Vue.use(Vuex)
 
 Axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-Axios.defaults.headers.common['X-Api-Token'] = Util.getStorage('data_auth').api_token
+Axios.defaults.headers.common['X-Api-Token'] = Util.getStorage(
+  'data_auth').api_token
 
 const REPORT_SERVICE = new Vuex.Store({
   actions: {

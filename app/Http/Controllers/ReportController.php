@@ -63,7 +63,10 @@ class ReportController extends Controller
         return $data;
     }
 
-    public function export(ReportRequest $request)
+  /**
+   * @param ReportRequest $request
+   */
+  public function export(ReportRequest $request)
     {
         try {
             //Request:
